@@ -1,0 +1,1590 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Luma Calendar</title>
+
+<style>
+  :root {
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --ink-soft: #666666;
+    --line: #dddddd;
+    --link: #0645ad;
+    --cat-bg: #f0f0f0;
+    --hl-near-bg: #c8f0c0;
+    --hl-near-border: #3f9142;
+    --hl-mid-bg: #eceff1;
+    --hl-mid-border: #9aa0a6;
+    --hl-near-link: #2f6627;
+    --hl-mid-link: #52585e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14181a;
+      --ink: #e7e9ea;
+      --ink-soft: #9aa3a8;
+      --line: #2c3336;
+      --link: #7fb0ff;
+      --cat-bg: #232a2d;
+      --hl-near-bg: #1f3d1a;
+      --hl-near-border: #5cba54;
+      --hl-mid-bg: #262b2e;
+      --hl-mid-border: #7a8288;
+      --hl-near-link: #8fd685;
+      --hl-mid-link: #c3c9ce;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #14181a; --ink: #e7e9ea; --ink-soft: #9aa3a8; --line: #2c3336;
+    --link: #7fb0ff; --cat-bg: #232a2d; --hl-near-bg: #1f3d1a; --hl-near-border: #5cba54;
+    --hl-mid-bg: #262b2e; --hl-mid-border: #7a8288; --hl-near-link: #8fd685; --hl-mid-link: #c3c9ce;
+  }
+  :root[data-theme="light"] {
+    --paper: #ffffff; --ink: #1a1a1a; --ink-soft: #666666; --line: #dddddd;
+    --link: #0645ad; --cat-bg: #f0f0f0; --hl-near-bg: #c8f0c0; --hl-near-border: #3f9142;
+    --hl-mid-bg: #eceff1; --hl-mid-border: #9aa0a6; --hl-near-link: #2f6627; --hl-mid-link: #52585e;
+  }
+  body { font-family: -apple-system, sans-serif; max-width: 1500px; margin: 40px auto; padding: 0 16px; color: var(--ink); background: var(--paper); }
+  h1 { font-size: 1.4rem; }
+  .week-grid { display: flex; gap: 10px; overflow-x: auto; align-items: flex-start; }
+  .day-col { flex: 1 0 190px; min-width: 190px; }
+  .event-list { column-gap: 10px; }
+  .event-list .event { break-inside: avoid; }
+  .day-header { font-size: 0.95rem; font-weight: 600; border-bottom: 2px solid var(--line); padding-bottom: 6px; margin-bottom: 8px; }
+  .day-header .count { color: var(--ink-soft); font-weight: 400; font-size: 0.8rem; }
+  .event { padding: 6px 8px; border-radius: 6px; margin-bottom: 6px; border: 1.5px solid #ccc; }
+  .event a { display: block; font-weight: 600; font-size: 1rem; text-decoration: none; color: var(--link); }
+  .event a:hover, .event a:focus-visible { text-decoration: underline; }
+  .meta { color: var(--ink-soft); font-size: 0.75rem; margin-top: 2px; }
+  .desc { color: var(--ink); opacity: 0.85; font-size: 0.75rem; margin-top: 4px; }
+  .cat { display: inline-block; background: var(--cat-bg); border-radius: 4px; padding: 1px 5px; font-size: 0.7rem; margin-right: 3px; }
+  .hl-near { background: var(--hl-near-bg); }
+  .hl-near a { color: var(--hl-near-link); }
+  .hl-mid { background: var(--hl-mid-bg); }
+  .hl-mid a { color: var(--hl-mid-link); }
+  .event.far { padding: 4px 8px; }
+  .event.far a { font-weight: 400; font-size: 0.8rem; color: var(--ink-soft); }
+  .event.far .meta { font-size: 0.68rem; }
+  .event.far .desc { display: none; }
+  .empty { color: var(--ink-soft); font-size: 0.8rem; font-style: italic; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 14px; }
+  .legend { display: flex; flex-direction: column; gap: 6px; }
+  .legend-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.8; }
+  .legend-items { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 0.8rem; color: var(--ink-soft); }
+  .legend-items div { display: flex; align-items: center; white-space: nowrap; }
+  .legend-items span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; flex-shrink: 0; }
+  .scroll-hint { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 12px; }
+  .week-grid { scrollbar-width: thin; scrollbar-color: var(--line) transparent; padding-bottom: 8px; }
+  .week-grid::-webkit-scrollbar { height: 8px; }
+  .week-grid::-webkit-scrollbar-track { background: transparent; }
+  .week-grid::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Next 7 Days</h1>
+<div class="legend-row">
+  <div class="legend">
+    <div class="legend-label">Distance</div>
+    <div class="legend-items">
+      <div><span style="background: #c8f0c0; border: 1px solid #3f9142;"></span>Within 3 km</div>
+      <div><span style="background: #eceff1; border: 1px solid #9aa0a6;"></span>Within 8 km</div>
+      <div><span style="background: none; border: 1px solid var(--line);"></span>Farther (quieter card)</div>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="legend-label">Time of day (card frame)</div>
+    <div class="legend-items">
+      <div><span style="background: #4a90d9;"></span>Morning</div>
+      <div><span style="background: #f0a202;"></span>Afternoon</div>
+      <div><span style="background: #8e44ad;"></span>Evening</div>
+      <div><span style="background: #2c3e50;"></span>Late night</div>
+    </div>
+  </div>
+</div>
+<div class="scroll-hint">Scroll sideways for more days →</div>
+<div class="week-grid"><div class="day-col" style="flex: 4 0 790px; min-width: 790px;"><div class="day-header">Sat, Jul 25 <span class="count">(44)</span></div><div class="event-list" style="column-count: 4;">
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/b6nv7pif" target="_blank">AI Bootcamp: Agents in the Enterprise — A Hands-On Build Day for Executives, Leaders and Innovators</a>
+      <div class="meta">8:00–5:00 PM · Valley Research Park, 319 N Bernardo Ave, Mountain View, CA 94043, USA · 52.8 km <span class="cat">ai</span></div>
+      <div class="desc">AI Bootcamp — Let&#x27;s Build Agents Hands-On Immersive Bootcamp and Networking Opportunities for Executives, Leaders, Innovators, and Builders Sat, July 25 · 8:00 AM – 5:00 PM PST Discounts: In between jobs?</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/msdw1eg4" target="_blank">Builders who Run SF — 5K</a>
+      <div class="meta">9:00–10:00 AM · Golden Gate Park, San Francisco, California · 4.3 km <span class="cat">tech</span></div>
+      <div class="desc">Builders who Run is an informal and international running club.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/ttc3tp9d" target="_blank">Open World Hackathon: building the future of physical AI</a>
+      <div class="meta">9:00–6:30 PM · Mission District, San Francisco, CA · 1.5 km <span class="cat">ai</span></div>
+      <div class="desc">Website Link Join us for a full day of building physical AI through three different tracks: Theme 1 • Open Narrative Build real-world scenarios and puzzle experiences inside VLGE.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/cab2mifr" target="_blank">Founders Running Club :: SF</a>
+      <div class="meta">9:30–11:30 AM · William McKinley Monument, San Francisco, CA 94117, USA · 3.4 km <span class="cat">tech</span></div>
+      <div class="desc">Founders Running Club (FRC) brings founders, investors, tech, creative people and startup enthusiasts together for weekly easy runs and networking.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/avi3l01q" target="_blank">24hr AI for Science World Models Hack @ Zeon Systems</a>
+      <div class="meta">9:30–5:30 PM · SoMa, San Francisco, CA · 1.1 km <span class="cat">ai</span></div>
+      <div class="desc">For the next hack in this series, we&#x27;re going beyond LLM workflows and into the physical world.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/xtrace-e47u" target="_blank">Mind Games AI Hackathon + Exclusive Napa Retreat</a>
+      <div class="meta">9:30–6:00 PM · Stanford, CA · 43.0 km <span class="cat">ai</span></div>
+      <div class="desc">The BSH × XTrace AI Hackathon Weekend Not your typical hackathon.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/xhogf93u" target="_blank">Scalekit x Meetstream Agents in Production Build Day SF</a>
+      <div class="meta">9:45–6:00 PM · Rincon Hill, San Francisco, CA · 1.8 km <span class="cat">ai</span></div>
+      <div class="desc">Build agents that take actions Most agents are demos.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/nqydi1h0" target="_blank">Saturday Volunteer Day at Rancho San Gregorio</a>
+      <div class="meta">10:00–2:00 PM · 100 Ralston Rd, San Gregorio, CA 94074, USA · 46.8 km <span class="cat">tech</span></div>
+      <div class="desc">🌱 Join us for a hands-on volunteer day at Rancho San Gregorio , a regenerative ranch in the redwoods of San Gregorio, California.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/ybwuyxig" target="_blank">AI时代，我们想成为什么样的人</a>
+      <div class="meta">10:00–12:00 PM · 1034 Indian Wells Ave, Sunnyvale, CA 94085, USA · 55.6 km <span class="cat">ai</span></div>
+      <div class="desc">☕ AI时代，我们想成为什么样的人？ AI正在改变我们的工作方式，也正在改变我们思考、学习和成长的方式。 有人已经把AI融入日常工作，有人在探索新的职业方向，也有人仍在观察和思考未来会发生什么。 这次活动没有专家演讲，也没有标准答案。 我们希望通过轻松的小组交流，一起聊聊： 🤖 AI正在如何影响我们的工作和生活？ 💡 你尝试过哪些AI工具或工作方式？ 🌱 面对未来的变化，你正在学习什么、探索什么？ 🚀 未来几年，你希望自己成为什么样的人？…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/vcn-44-the-loop" target="_blank">VCN #44: The Loop</a>
+      <div class="meta">10:00–1:00 PM · Frontier Tower 🧑‍🚀, 995 Market St, San Francisco, CA 94103, USA · 1.4 km <span class="cat">ai</span></div>
+      <div class="desc">Heads up: this is a hands-on build night and bringing a laptop is mandatory.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/tdrymv2a" target="_blank">JULY - Greater Silicon Valley Robotics &amp; Automation Luncheon</a>
+      <div class="meta">11:00–4:00 PM · 100 Ralston Rd, San Gregorio, CA 94074, USA · 46.8 km <span class="cat">tech</span></div>
+      <div class="desc">Running a robotics startup means constantly dealing with hardware iterations, code, investors, and endless dashboards.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/spa3uzsn" target="_blank">The AI Trust: Compliance as Competitive Advantage</a>
+      <div class="meta">11:00–12:30 PM · KavehG, 3408 Camino Tassajara, Danville, CA 94506, USA · 42.6 km <span class="cat">ai</span></div>
+      <div class="desc">Deals die in security reviews.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/xtf6v2bx" target="_blank">For the First Time Ever: Siamak &amp; Babak Hodjat — Live</a>
+      <div class="meta">11:30–2:00 PM · SoMa, San Francisco, CA · 1.8 km <span class="cat">ai</span></div>
+      <div class="desc">For the First Time Ever: Siamak &amp; Babak Hodjat — Live Before ChatGPT.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/43sue6gn" target="_blank">Personal Branding Round Table in AI Era</a>
+      <div class="meta">11:30–2:00 PM · 883 N Shoreline Blvd d100, Mountain View, CA 94043, USA · 49.6 km <span class="cat">ai</span></div>
+      <div class="desc">Pizza, snacks and drinks will be there!</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/zc4h3auw" target="_blank">Pizza Making Experience</a>
+      <div class="meta">11:30–1:30 PM · 1462 Grant Ave, San Francisco, CA 94133, USA · 3.3 km <span class="cat">food</span></div>
+      <div class="desc">Pizza Making Experience at North Beach Pizza Join us for a fun and interactive 2-hour pizza-making class at North Beach Pizza in the heart of San Francisco’s historic North Beach neighborhood.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/x50gv11n" target="_blank">Lunch Talk Series #4:</a>
+      <div class="meta">12:15–1:30 PM · 1591 McCarthy Blvd, Milpitas, CA 95035, USA · 58.9 km <span class="cat">ai</span></div>
+      <div class="desc">Networking Topic: Can AI Replace Human Intuition?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/imbue-6sbg" target="_blank">Punk Software Hack Night: Take the Plunge</a>
+      <div class="meta">1:00–10:00 PM · Civic Center, San Francisco, CA · 1.8 km <span class="cat">tech</span></div>
+      <div class="desc">basically: &quot;it&#x27;s like cold plunge, except instead of the ocean, it&#x27;s that super confusing tutorial which you&#x27;ve been meaning to try and is probably not all that bad and you&#x27;ve just been putting it off for various reasons&quot; Today we&#x27;re…</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/4tpilrqp" target="_blank">🦾 Self-evolving in the Real World: the Physical AI Edition</a>
+      <div class="meta">1:00–6:00 PM · Stanford, CA · 43.8 km <span class="cat">ai</span></div>
+      <div class="desc">🦾About This Event An invite-only forum at Stanford bringing together the researchers, scientists, founders, and investors shaping the future of embodied intelligence.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/uybqb7be" target="_blank">Team-Up #2: Alumni Mix Networking</a>
+      <div class="meta">1:30–4:30 PM · 1591 McCarthy Blvd, Milpitas, CA 95035, USA · 58.9 km <span class="cat">ai</span></div>
+      <div class="desc">Alumni Mix Networking Join alumni and friends from CSTU, Tsinghua University, and Harbin Institute of Technology (HIT) for an inspiring afternoon of networking, AI discussions, and collaboration.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/bluerobinsmentorlab" target="_blank">BlueRobins Mentor Lab 🧺 Picnic, July 25</a>
+      <div class="meta">2:00–4:00 PM · Upper Rockridge, Oakland, CA · 17.3 km <span class="cat">tech</span></div>
+      <div class="desc">BlueRobins Mentor Lab: where frontier innovators in Silicon valley meet, connect and inspire future builders.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/howbaby" target="_blank">How to make a baby | a computational theatre performance by Halim Madi</a>
+      <div class="meta">2:00–3:00 PM · tiat, 151 Powell St, San Francisco, CA 94102, USA · 1.8 km <span class="cat">tech</span></div>
+      <div class="desc">2pm to 2:45pm right before the closing reception.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/qm7ypy8n" target="_blank">Summer Social with SWE x NSBE x SHPE</a>
+      <div class="meta">2:00–4:00 PM · SPARK Social SF, 601 Mission Bay Blvd North, San Francisco, CA 94158, USA · 1.0 km <span class="cat">tech</span></div>
+      <div class="desc">Join the Bay Area sections of the Society of Women Engineers (SWE), National Society of Black Engineers (NSBE), and Society of Hispanic Professional Engineers (SHPE) for a casual happy hour at Spark Social SF on July 25th from 2-4pm!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/z26ee09j" target="_blank">TQ and Chill</a>
+      <div class="meta">2:00–5:00 PM · Mission Dolores Park, Dolores St &amp;, 19th St, San Francisco, CA 94114, USA · 2.4 km <span class="cat">tech</span></div>
+      <div class="desc">Techqueria Bay Area invites you to TQ and Chill 😎 No agenda, no talks — just good vibes, good company, and a sunny afternoon at Dolores Park.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/jpqtise0" target="_blank">AI + Drone Innovation Lab</a>
+      <div class="meta">2:00–4:00 PM · Los Altos Christian School, 625 Magdalena Ave, Los Altos, CA 94024, USA · 52.9 km <span class="cat">ai</span></div>
+      <div class="desc">AI + Drone Innovation Lab Lecturer: Brian Loeswick and TAs Brian Loeswick is an AI educator and technology innovator who specializes in hands-on learning experiences that help students explore emerging technologies.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/w557ceza" target="_blank">Memory &amp; Context — A Deep-Dive Salon @ GeekHouse</a>
+      <div class="meta">2:00–5:00 PM · Country Club, Los Altos, CA · 54.0 km <span class="cat">ai</span></div>
+      <div class="desc">Most AI events optimize for coverage: more talks, more demos, more people.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/5ltk12w5" target="_blank">Robotics &amp; World Models Reading Club 20: Agentic Robotics Models (ENPIRE and Cap-X) — Mountain View 07/25</a>
+      <div class="meta">2:00–5:00 PM · Mountain View, CA · 51.8 km <span class="cat">ai</span></div>
+      <div class="desc">Robotics &amp; World Models Reading Club 20: Agentic Robotics Models (ENPIRE and Cap-X) — Mountain View A high-signal reading group for AI researchers &amp; builders pushing the frontiers of robotic world models, WAMs, and embodied intelligence .</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/nh67khl7" target="_blank">A Dash Of: Salt &amp; Spice — Summer Fruit Tasting</a>
+      <div class="meta">2:00–3:30 PM · Blu Dot, 99 Missouri St, San Francisco, CA 94107, USA · 0.8 km <span class="cat">food</span></div>
+      <div class="desc">Saturday, July 25 · 2:00–3:30 PM · Blu Dot Showroom, San Francisco · $45 Summer fruit is already pretty great on its own.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/epistemologies" target="_blank">the Epistemologies of Slop | Art + Tech Exhibition Closing Reception</a>
+      <div class="meta">3:00–4:00 PM · tiat, 151 Powell St, San Francisco, CA 94102, USA · 1.8 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for the closing reception of The Epistemologies of Slop, a group exhibition at tiat exploring how meaning, trust, and culture are produced under conditions of algorithmic and AI excess.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/sm6t19mc" target="_blank">Agent-Native Founders Pitch &amp; Mingle</a>
+      <div class="meta">4:00–6:00 PM · Mountain View, CA · 49.4 km <span class="cat">ai</span></div>
+      <div class="desc">We&#x27;re hoping to bring together a handpicked lineup of agent-native founders to share what they&#x27;re building.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #f0a202;">
+      <a href="https://lu.ma/p6yo9go4" target="_blank">Local AI Workshop</a>
+      <div class="meta">4:00–6:00 PM · Studio 45 - informal spaces SF, 45 29th St, San Francisco, CA 94110, USA · 3.4 km <span class="cat">ai</span></div>
+      <div class="desc">Back for a 2nd time!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/o72f7h7g" target="_blank">Off the Record: AI Researchers Roundtable Chat w/ Dinner</a>
+      <div class="meta">4:00–8:00 PM · SoMa, San Francisco, CA · 1.9 km <span class="cat">ai</span></div>
+      <div class="desc">No talks.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/wmw6rnmh" target="_blank">Anything But Names: a Sonder × Lemma afterparty</a>
+      <div class="meta">6:00–9:00 PM · 349 9th St, San Francisco, CA 94103, USA · 0.7 km <span class="cat">tech</span></div>
+      <div class="desc">This Saturday night, you&#x27;ll be known by your stories, your dreams, your worries, or the food you hated last week.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/8sf0hjs0" target="_blank">Canadian YC Founders Showcase @ Startup School</a>
+      <div class="meta">6:00–9:00 PM · SoMa, San Francisco, CA · 2.0 km <span class="cat">tech</span></div>
+      <div class="desc">🇨🇦 Canadian YC Founders Showcase at this year&#x27;s YC Startup School 2026 Hear from some of the fastest-growing YC startups you should consider joining.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/wafer-s6dv" target="_blank">Chips &amp; Chips: Wafer x YC Startup School Poker Night</a>
+      <div class="meta">6:00–10:00 PM · Financial District, San Francisco, CA · 2.5 km <span class="cat">tech</span></div>
+      <div class="desc">YC Startup School is bringing thousands of programmers to San Francisco for the weekend.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/chqmxhyg" target="_blank">File Systems, Sandboxes, and the Irish Bank: YC @ Archil</a>
+      <div class="meta">6:00–10:00 PM · Union Square, San Francisco, CA · 2.1 km <span class="cat">tech</span></div>
+      <div class="desc">[UPDATE] We&#x27;re relocating 50 feet down the street to the Irish Bank to accommodate more people!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/newaesthetics" target="_blank">new aesthetics</a>
+      <div class="meta">6:00–8:00 PM · tiat, 151 Powell St, San Francisco, CA 94102, USA · 1.8 km <span class="cat">tech</span></div>
+      <div class="desc">Why does contemporary culture so often feel as though it has stopped producing genuinely new aesthetics?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/g560wlbu" target="_blank">Nowadays Presents: YC Startup School Afterparty</a>
+      <div class="meta">6:00–9:00 PM · SoMa, San Francisco, CA · 1.3 km <span class="cat">tech</span></div>
+      <div class="desc">A 🛒🍷 Trader Joe&#x27;s themed night for YC Startup School attendees and anyone around SF!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/lvtktjm7" target="_blank">YC x LemonLime – Calling All Crazy Builders Afterparty</a>
+      <div class="meta">6:00–10:00 PM · 209 9th St, San Francisco, CA 94103, USA · 1.0 km <span class="cat">tech</span></div>
+      <div class="desc">If people think you&#x27;re crazy, this is the YC afterparty for you.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/olys436o" target="_blank">c0mpiled-13: Startup School Hackathon II</a>
+      <div class="meta">6:00–11:00 PM · Transpose Platform, 27 S Park St Suite 100, San Francisco, CA 94107, USA · 1.5 km <span class="cat">ai</span></div>
+      <div class="desc">📅 Saturday, July 25, 2026 | 6:00PM – 11:00PM 📍 Transpose Platform | 27 South Park Suite 100, San Francisco, CA 94107 🍕 Dinner, drinks, and snacks provided c0mpiled , (by Transpose Platform ) is excited to host c0mpiled-13: Startup School…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/9qz4l69s" target="_blank">YC AI Startup School Infra Layer After-party</a>
+      <div class="meta">6:00–10:00 PM · Mission Rock, San Francisco, CA · 1.3 km <span class="cat">ai</span></div>
+      <div class="desc">Hosted by InsForge (YC P26), Chronicle Labs (YC P26), smol machines (YC P26) , Manufact (YC S25), and The Prompting Company (YC S25).</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/mtwf2nth" target="_blank">YC Startup School Afterparty: Founder Hot Pot</a>
+      <div class="meta">6:00–9:00 PM · Little Russia, San Francisco, CA · 6.8 km <span class="cat">ai</span></div>
+      <div class="desc">Join the founders of Superset (YC P26) and Halluminate (YC S25) for a hot pot afterparty following YC Startup School.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/m4ez9liu" target="_blank">YC AI Startup School Afterparty</a>
+      <div class="meta">6:00–10:00 PM · Showplace Square, San Francisco, CA · 0.5 km <span class="cat">ai</span></div>
+      <div class="desc">Hosted by Moss , Supabase , Modal &amp; Render Join us after Y Combinator&#x27;s AI Startup School for an afterparty full of great conversations, food, and networking with some of the strongest AI builders in San Francisco.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/bzdn8lr2" target="_blank">YC Startup School After Party with Roboflow</a>
+      <div class="meta">6:00–9:00 PM · Union Square, San Francisco, CA · 1.7 km <span class="cat">ai</span></div>
+      <div class="desc">After YC&#x27;s AI Startup School wraps, come find us.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #2c3e50;">
+      <a href="https://lu.ma/90tzyxq3" target="_blank">YC Startup School: The EXA.ai After-After Party</a>
+      <div class="meta">9:00–12:00 AM · Mission District, San Francisco, CA · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">Join us at Exa HQ for the after-after party, ending YC Startup School Day 1 on a high note with some of the top founders, engineers, and researchers in San Francisco.</div>
+    </div>
+    </div></div><div class="day-col" style="flex: 2 0 390px; min-width: 390px;"><div class="day-header">Sun, Jul 26 <span class="count">(23)</span></div><div class="event-list" style="column-count: 2;">
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/ycschool-run-722" target="_blank">YC Startup School | Day 2 Run</a>
+      <div class="meta">7:00–8:00 AM · Embarcadero, San Francisco, CA · 2.8 km <span class="cat">tech</span></div>
+      <div class="desc">Stack conviction together over 3-5 miles with other builders along the pier before YC Startup School.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/9x1573sw" target="_blank">JacHacks San Francisco</a>
+      <div class="meta">8:00–10:00 PM · Founders, Inc. | San Francisco Lab, 2 Marina Blvd B300, San Francisco, CA 94123, USA · 4.8 km <span class="cat">ai</span></div>
+      <div class="desc">After hosting JacHacks at the University of Michigan and launching our first global edition with 500+ builders from 10+ countries, we&#x27;re bringing the next chapter to San Francisco.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/2cxt88n4" target="_blank">CrewAI Studio Hackathon</a>
+      <div class="meta">9:00–4:30 PM · Union Square, San Francisco, CA · 2.0 km <span class="cat">ai</span></div>
+      <div class="desc">Our first hackathon in the new office, open to all builders, engineers or not.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/en4yjmyr" target="_blank">Recursive Self Improvement for AI Agents - Hack</a>
+      <div class="meta">10:00–8:00 PM · Western Addition, San Francisco, CA · 3.2 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for a hack to learn and build agents that recursively self improve.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/892es1xa" target="_blank">Vibe Coding Cafe</a>
+      <div class="meta">10:00–6:00 PM · 3201 Skyway Ct, Fremont, CA 94539, USA · 49.9 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for Vibe Coding Cafe — a relaxed yet productive coding day hosted by Knowpia Inc.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/dlvyghdj" target="_blank">Verilog Meetup</a>
+      <div class="meta">11:00–2:00 PM · Hacker Dojo, 855 Maude Ave, Mountain View, CA 94043, USA · 52.0 km <span class="cat">tech</span></div>
+      <div class="desc">We continue to work on developing hands-on exercises and educational materials that include: Tutorial-level examples working on FPGA boards from multiple vendors - Xilinx, Altera, Gowin, Lattice, Efinix.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #f0a202;">
+      <a href="https://lu.ma/y41x3x7x" target="_blank">WeAreDevelopers Community Hike</a>
+      <div class="meta">12:00–2:30 PM · Crissy Field Center Parking Lot, Mason St, Halleck St at, San Francisco, CA 94129, USA · 5.8 km <span class="cat">tech</span></div>
+      <div class="desc">WeAreDevelopers Community Hike: San Francisco Edition 🌉🥾 Join us for an afternoon of fresh air, great conversations, and breathtaking views alongside fellow developers, engineers, founders, and tech enthusiasts from across the Bay Area.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/u8j9b0a6" target="_blank">Robotics × Physical AI Founder-Investor Summit</a>
+      <div class="meta">1:00–7:00 PM · Stanford, CA · 43.5 km <span class="cat">ai</span></div>
+      <div class="desc">Stanford Robotics × Physical AI Founder-Investor Summit July 26, 2026 · Stanford Faculty Club Hosted by CANOPY × IntelliPro Pitch 💡 Who Should Join 🚀 Founders / Startup Teams Robotics, AI hardware, embodied AI, autonomous systems, Physical…</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/g76q9q3m" target="_blank">Hangtime: An Oakland Yard Wine Fair</a>
+      <div class="meta">1:00–6:00 PM · Oakland Yard Wine Shop, 420 40th St #2, Oakland, CA 94609, USA · 14.1 km <span class="cat">food</span></div>
+      <div class="desc">Join us for a summer afternoon at Oakland Yard’s inaugural wine fair, Hangtime.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/egnkbbus" target="_blank">AI 时代，一人公司布道者与过来人</a>
+      <div class="meta">2:00–4:00 PM · OneSpace Work, 2665 N First St #214, San Jose, CA 95134, USA · 59.6 km <span class="cat">ai</span></div>
+      <div class="desc">AI 不会取代你，但会取代不会用 AI 的人。 当 AI 让一个人拥有过去一个团队的能力，你如何抓住属于自己的机会？ Join us for an afternoon of practical insights, real stories, and meaningful conversations with leaders in education and AI.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/rhbtwo9u" target="_blank">SF AI Code And Coffee Sunday July 26th!</a>
+      <div class="meta">2:00–5:00 PM · Salesforce Park, 425 Mission St, San Francisco, CA 94105, USA · 2.2 km <span class="cat">ai</span></div>
+      <div class="desc">Join us AI developers, engineers, founders, investors and enthusiasts looking to network!</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/9k49dno7" target="_blank">Breaking Models AI Security</a>
+      <div class="meta">2:30–4:00 PM · Hacker Dojo, 855 Maude Ave, Mountain View, CA 94043, USA · 52.0 km <span class="cat">ai</span></div>
+      <div class="desc">Breaking Models — Session 4: Attack &amp; Defend Edition 🛡️ One talk on what happens after an AI gets hacked.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/sytdq6dh" target="_blank">European Sundays in SF #2</a>
+      <div class="meta">3:00–6:00 PM · South Beach, San Francisco, CA · 1.8 km <span class="cat">tech</span></div>
+      <div class="desc">European founders work less than American founders.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/f7evbh16" target="_blank">Greeks in SF. 🇬🇷</a>
+      <div class="meta">3:00–6:00 PM · SoMa, San Francisco, CA · 1.6 km <span class="cat">tech</span></div>
+      <div class="desc">You know what it is...</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/House_of_ai_sbc_2026" target="_blank">House of AI @ SBC 2026</a>
+      <div class="meta">3:00–7:00 PM · el PRADO Hotel, 520 Cowper St, Palo Alto, CA 94301, USA · 41.8 km <span class="cat">ai</span></div>
+      <div class="desc">House of AI: Robotics &amp; Demo Day Where AI meets the physical world.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/5m9yhtzj" target="_blank">AI for Science World Model Demos @ Zeon Systems</a>
+      <div class="meta">3:30–5:30 PM · SoMa, San Francisco, California · 1.1 km <span class="cat">ai</span></div>
+      <div class="desc">Join us after 24 hours of building ( hack link here )!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/staaake-ars1" target="_blank">Claude Code users / Vibe coders. — Power Walk</a>
+      <div class="meta">4:00–5:00 PM · Starbucks Coffee Company, 1100 Van Ness Ave, San Francisco, CA 94109, USA · 2.3 km <span class="cat">ai</span></div>
+      <div class="desc">Meet your vibe coder / claude code user peers and get your daily steps in!</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/leverage-z19v" target="_blank">Touch Grass &amp; Walk in the Park</a>
+      <div class="meta">5:30–8:00 PM · Haight-Ashbury, San Francisco, CA · 4.5 km <span class="cat">ai</span></div>
+      <div class="desc">A no-pitch builders hike on Sunday, July 26, the weekend after the big SF conference week winds down.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/fondo_yc_startup_school_afterparty" target="_blank">fondo yc startup school afterparty</a>
+      <div class="meta">6:00–10:00 PM · Mission District, San Francisco, CA · 1.7 km <span class="cat">tech</span></div>
+      <div class="desc">YC Startup School is here.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/browse-l2aj" target="_blank">Startup School Afterparty | by Vercel, Warp, Reducto, and Browserbase</a>
+      <div class="meta">6:00–8:00 PM · Union Square, San Francisco, CA · 2.1 km <span class="cat">ai</span></div>
+      <div class="desc">Hosted by Browserbase , Warp , Reducto , and Vercel Join us for an afterparty following Day 2 of Y Combinator&#x27;s AI Startup School, hosted by some of the fastest-growing dev tools / infra startups in SF!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/wpqj3pvm" target="_blank">Duke Sunset Pregame - YC Startup School</a>
+      <div class="meta">7:00–9:00 PM · 1918 23rd St, San Francisco, CA 94107, USA · 1.8 km <span class="cat">tech</span></div>
+      <div class="desc">Hosted by Duke founded Synapse Semiconductor (S26).</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/x9fo4o39" target="_blank">YC Reject Camp Showcase | Presented by Paradigm</a>
+      <div class="meta">7:00–10:00 PM · 450 Folsom St, San Francisco, CA 94105, USA · 2.1 km <span class="cat">tech</span></div>
+      <div class="desc">Paradigm Presents: The YC Reject Showcase When Cards Against Humanity meets startups.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/yp4xhswa" target="_blank">YC Startup School After Party</a>
+      <div class="meta">7:30–10:00 PM · Alamo Square, San Francisco, CA · 2.7 km <span class="cat">tech</span></div>
+      <div class="desc">A super casual outdoor DJ party for founders, operators, investors, and other people in the SF startup community.</div>
+    </div>
+    </div></div><div class="day-col" style="flex: 2 0 390px; min-width: 390px;"><div class="day-header">Mon, Jul 27 <span class="count">(18)</span></div><div class="event-list" style="column-count: 2;">
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/AGI-26" target="_blank">AGI-26 Conference</a>
+      <div class="meta">9:00–10:00 PM · Parkmerced, San Francisco, California · 8.4 km <span class="cat">ai</span></div>
+      <div class="desc">The AGI Conference Series is the global pinnacle of AGI research.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/aha4w3kr" target="_blank">Stop the AI Race: Occupy OpenAI</a>
+      <div class="meta">9:00–6:00 PM · 1455 3rd St, San Francisco, CA 94158, USA · 1.2 km <span class="cat">ai</span></div>
+      <div class="desc">In partnership with Stop the AI Race , this is Day 6 of occupying the sidewalk in front of OpenAI&#x27;s doors until they urge for an AI Treaty, as in aitreaty.org .</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/rtc-camp-sf26day1" target="_blank">SF 2026 | Founders Camp — Day 1</a>
+      <div class="meta">10:00–2:00 PM · Embarcadero, San Francisco, CA · 3.0 km <span class="cat">tech</span></div>
+      <div class="desc">This summer, we&#x27;re hosting a Founder Summer Camp in San Francisco to sharpen your hypothesis, build experiments, and establish an operating cadence that accelerates product-market fit — and get pitch ready.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/bs8fz5xr" target="_blank">YC S26: Demo &amp; Roast</a>
+      <div class="meta">10:00–3:30 PM · 3130 20th St, San Francisco, CA 94110, USA · 1.5 km <span class="cat">tech</span></div>
+      <div class="desc">We’re inviting batchmates building products that other founders can use to our office on Monday, July 27 We’ll co-work, try each other’s products, and exchange honest feedback.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/5w78yjyy" target="_blank">Corgi Coffee Co-op: DIY Coffee for Founders</a>
+      <div class="meta">11:00–2:30 PM · Corgi Cafe, 9 Claude Ln, San Francisco, CA 94108, USA · 2.2 km <span class="cat">food</span><span class="cat">tech</span></div>
+      <div class="desc">Founders, want to make your own coffee at the Corgi Cafe?</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/qz17mbko" target="_blank">AI Creators Meetup: Build, Experiment &amp; Get Featured</a>
+      <div class="meta">1:00–2:30 PM · Akool, 471 Emerson St, Palo Alto, CA 94301, USA · 41.9 km <span class="cat">ai</span></div>
+      <div class="desc">Discover AKOOL’s new Artist-in-Residence Program for Bay Area creators.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/f0h02szk" target="_blank">Autonomy in Motion: Drones, UAV, USV, UUV &amp; Beyond - Silicon Valley Physical AI Meetup</a>
+      <div class="meta">3:30–7:00 PM · 2665 N First St suite 214, San Jose, CA 95134, USA · 59.6 km <span class="cat">ai</span></div>
+      <div class="desc">The Physical AI Revolution Takes Flight — On Land, Sea, and Sky Join us for an electrifying evening at the intersection of autonomy and hardware — where drones, unmanned surface vehicles, unmanned underwater vehicles, and next-gen robotics…</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ag41vlaz" target="_blank">Investors Summer Drinks</a>
+      <div class="meta">5:30–8:30 PM · University South, Palo Alto, CA · 42.0 km <span class="cat">ai</span></div>
+      <div class="desc">Investors summer drinks VCs &amp; CVCs Join Louis Lehot, Foley &amp; Lardner, Murray Newlands, and Open Future Forum for a private summer drinks mixer bringing together venture capital investors, corporate venture capital leaders, and selected…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/dgbo2kus" target="_blank">Building Decagon from 0 to 1</a>
+      <div class="meta">6:00–8:00 PM · a16z, 180 Townsend St, San Francisco, CA 94107, USA · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for a conversation with Decagon co-founder Ashwin Sreenivas about what it was actually like building the company from 0 to 1.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/z9teb942" target="_blank">Founder Rooftop Gala | YC Startup School Afterparty</a>
+      <div class="meta">6:00–10:00 PM · 450 Folsom St, San Francisco, CA 94105, USA · 2.1 km <span class="cat">tech</span></div>
+      <div class="desc">An official Startup School Day 1 Afterparty.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/SFLightDAOJuly" target="_blank">Building AI-Native Startups at Hackathon Speed: The Power of Trusted Allies &amp; Community to Bring Bold Visions to Life - Light DAO Salon (SF)</a>
+      <div class="meta">6:00–9:00 PM · SoMa, San Francisco, California · 1.8 km <span class="cat">ai</span></div>
+      <div class="desc">Join Light Dao and our community of conscious entrepreneurs and investors for a salon evening filled with connection, deep conversations, and a fireside chat with Sako and Ruby Yeh, Co-Founder of Light Dao.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ka4bo75j" target="_blank">Post YC SUS Tech Founder &amp; Researcher Happy Hour at Berkeley Summit House</a>
+      <div class="meta">6:00–9:00 PM · Berkeley Hills, Berkeley, CA · 18.6 km <span class="cat">ai</span></div>
+      <div class="desc">A casual evening for technical founders, founding engineers, A casual evening for technical founders, CTOs, founding engineers, PhD researchers, AI researchers, and future founders to reconnect after YC Startup School and continue the…</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/k8prxfhg" target="_blank">3Cs Dinner</a>
+      <div class="meta">6:30–8:30 PM · Midtown, Palo Alto, CA · 44.8 km <span class="cat">tech</span></div>
+      <div class="desc">Come hungry, come ready to connect.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/lzr8x8wp" target="_blank">AM I? Free Doc Screening and Panel @ AGI-26</a>
+      <div class="meta">6:30–9:00 PM · San Francisco State University, 1600 Holloway Ave, San Francisco, CA 94132, USA · 8.5 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for a free, exclusive San Francisco screening of AM I?, a documentary that explores the relationship between our AI systems &amp; consciousness.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/se7" target="_blank">Aesthetics of Unreality | Speculative Everything book club</a>
+      <div class="meta">7:00–8:00 PM · tiat, 151 Powell St, San Francisco, CA 94102, USA · 1.8 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for a session exploring a chapter in Speculative Everything , a foundational text in speculative design that asks a deceptively simple question: what if design wasn&#x27;t primarily about solving problems, but about imagining…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/e8nc7ff3" target="_blank">After Hours @ Long Journey x Edge City 7/27</a>
+      <div class="meta">7:00–10:30 PM · Mission District, San Francisco, California · 1.3 km <span class="cat">tech</span></div>
+      <div class="desc">Dear Friends, Come get some work done alongside magically weird Long Journey humans, wander the rooms for a spark of inspiration, and stay as long as the energy feels good.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/bf1psict" target="_blank">Summer Soiree with Entire</a>
+      <div class="meta">7:00–10:00 PM · Mission District, San Francisco, CA · 1.9 km <span class="cat">tech</span></div>
+      <div class="desc">We&#x27;re renting out a wine bar in the Mission!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/5lcn6pt8" target="_blank">Pebblebed&#x27;s Builders Late Night Café</a>
+      <div class="meta">7:30–12:00 AM · Mission District, San Francisco, California · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">There&#x27;s something magical about working late with other people who are also in the zone.</div>
+    </div>
+    </div></div><div class="day-col" style="flex: 3 0 590px; min-width: 590px;"><div class="day-header">Tue, Jul 28 <span class="count">(33)</span></div><div class="event-list" style="column-count: 3;">
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/tz12kwqe" target="_blank">Founder x Investor Run: San Francisco</a>
+      <div class="meta">7:30–9:30 AM · South Beach, San Francisco, CA · 1.8 km <span class="cat">tech</span></div>
+      <div class="desc">One last time before leaving for Europe Summer.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/5nwrlfh6" target="_blank">The SF Grind: SF Startup Community Coffee Meetup</a>
+      <div class="meta">9:00–11:00 AM · Belden Place, San Francisco, CA · 2.4 km <span class="cat">tech</span></div>
+      <div class="desc">👋 Hey, Mina here!</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/u2gpx0r5" target="_blank">South Bay Founders, Indies, &amp; Builders co-working</a>
+      <div class="meta">10:00–3:00 PM · The Flyby, 800 Moffett Blvd, Mountain View, CA 94043, USA · 50.1 km <span class="cat">tech</span></div>
+      <div class="desc">Hey, I&#x27;m Zid , and I&#x27;m the founder of Spawnbeam (We beat a YC-backed company in a public launch battle).</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/jul-ai-forum" target="_blank">Enterprise AI at Scale: Talks + AI Agent Workshops, Ft Google, Snowflake, Thoughtspot &amp; Datasaur</a>
+      <div class="meta">3:30–8:30 PM · 135 Constitution Dr, Menlo Park, CA 94025, USA · 37.5 km <span class="cat">ai</span></div>
+      <div class="desc">A forum featuring hypergrowth startups and enterprise teams building AI-native companies.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/imrpq4q7" target="_blank">Open Batch 002 — Demo Day</a>
+      <div class="meta">4:00–7:00 PM · South Beach, San Francisco, CA · 1.6 km <span class="cat">tech</span></div>
+      <div class="desc">SEE WHAT YC ALUMNI BUILD NEXT Joining remotely?</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/l72tuoav" target="_blank">Denoising the Noise (ML for Bio) Journal Club</a>
+      <div class="meta">4:00–5:00 PM · Innovative Genomics Institute Building, 2151 Berkeley Way, Berkeley, CA 94704, USA · 16.6 km <span class="cat">ai</span></div>
+      <div class="desc">Conformation Sampling with Protein Folding Models Presenter: Stephen Lu (Yun Song Lab) Recent advances in protein folding models have dramatically improved structure prediction but generating diverse and biologically relevant…</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/15w0x4wn" target="_blank">AI × Health Happy Hour at Esther Wojcicki’s</a>
+      <div class="meta">4:30–6:30 PM · Tolman Drive, Tolman Dr, Stanford, CA 94305, USA · 45.5 km <span class="cat">ai</span></div>
+      <div class="desc">Treehub is hosting an intimate evening at the home of Esther Wojcicki — legendary Palo Alto educator, author of How to Raise Successful People , and often called the “Godmother of Silicon Valley.” Join founders, scientists, healthcare…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/8tm2uv6o" target="_blank">Deel Startup Programs Happy Hour</a>
+      <div class="meta">5:00–8:00 PM · Financial District, San Francisco, CA · 2.9 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for a summer happy hour We&#x27;re hosting drinks in SF for superstars running startup programs and VC partnerships.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/96csxazn" target="_blank">InnovateHER Investor Social</a>
+      <div class="meta">5:00–8:00 PM · Pilot.com, Inc., 353 Sacramento St #1900, San Francisco, CA 94111, USA · 2.6 km <span class="cat">tech</span></div>
+      <div class="desc">Where Capital Meets Community An invitation-only evening for accomplished women exploring venture capital and private investing.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/qzltss9v" target="_blank">Show and tell night</a>
+      <div class="meta">5:00–9:00 PM · Northern Waterfront, San Francisco, CA · 3.3 km <span class="cat">tech</span></div>
+      <div class="desc">Show and tell night This isn’t a normal show-and-tell demo night.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/rpgkq6qp" target="_blank">Legacy Lounge Palo Alto: The Capital Playbook</a>
+      <div class="meta">5:00–7:00 PM · Downtown North, Palo Alto, CA · 41.9 km <span class="cat">ai</span></div>
+      <div class="desc">Join Legacy Lounge in Palo Alto for an evening exploring The Capital Playbook—what it takes to raise, scale, and build lasting enterprise value as artificial intelligence reshapes every layer of the business stack.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/isyfjno2" target="_blank">Physical AI and Robotics Meetup</a>
+      <div class="meta">5:00–8:00 PM · Yerba Buena, San Francisco, CA · 1.8 km <span class="cat">ai</span></div>
+      <div class="desc">Welcome to the kickoff of the Bay Area Physical AI &amp; Robotics Meetup!</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/erkndozn" target="_blank">Robotics Founders &amp; VCs Private Dinner · Palo Alto</a>
+      <div class="meta">5:00–8:00 PM · Palo Alto, CA · 45.2 km <span class="cat">ai</span></div>
+      <div class="desc">An intimate dinner for the people building the future of robotics and physical AI.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/zbbnpkcd" target="_blank">Afore Founders Dinner &amp; Boardgames @ Corgi Cafe 🎉</a>
+      <div class="meta">5:30–8:00 PM · Corgi Cafe, 9 Claude Ln, San Francisco, CA 94108, USA · 2.2 km <span class="cat">tech</span></div>
+      <div class="desc">Afore FIR &amp; FIR U fam 🫶 pull up 🫶 we&#x27;re taking over Corgi Cafe for a night.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/40awvlsu" target="_blank">CBS VC HH - SF Edition</a>
+      <div class="meta">5:30–7:00 PM · Harlan Records, 18 Harlan Pl, San Francisco, CA 94108, USA · 2.2 km <span class="cat">tech</span></div>
+      <div class="desc">Come by for a casual HH for any CBS alum working in or near VC in SF!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ox-exclusive" target="_blank">Join OX Security for a Private Evening at the San Francisco Giants vs. Milwaukee Brewers Game | Tuesday, July 28 | Cybersecurity Leaders</a>
+      <div class="meta">5:30–9:30 PM · Oracle Park, 24 Willie Mays Plaza, San Francisco, CA 94107, USA · 1.5 km <span class="cat">tech</span></div>
+      <div class="desc">Join OX Security for an invitation only evening at Oracle Park as the San Francisco Giants take on the Milwaukee Brewers.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/7lhjec3b" target="_blank">scrappy sessions</a>
+      <div class="meta">5:30–7:00 PM · China Basin, San Francisco, CA · 1.6 km <span class="cat">tech</span></div>
+      <div class="desc">come to meet ppl building cool things :) u can demo literally anything the goal is to meet new ppl, learn a bit, and ask as many questions as you want free food 😛 bring a friend or two (have them sign up on the luma too) hosted by true…</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/6ysjv11o" target="_blank">Agentic AI Meets Go-to-Market: Panel and Mixer for Marketing and Growth Leaders</a>
+      <div class="meta">5:30–7:00 PM · Palo Alto, CA · 41.8 km <span class="cat">ai</span></div>
+      <div class="desc">Agentic AI Meets Go-to-Market: Two Panels and a Mixer for Marketing and Growth Leaders Join a curated group of marketing, growth, and customer leaders for an invite-only evening on how agentic AI is reshaping the way companies go to market.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/hdpzwrnu" target="_blank">AI Infra Sellers Meetup #5</a>
+      <div class="meta">5:30–7:30 PM · The Irish Bank, 10 Mark Ln, San Francisco, CA 94108, USA · 2.2 km <span class="cat">ai</span></div>
+      <div class="desc">Calling all AI Infra Sellers!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/durable-ai-july" target="_blank">Durable Multimodal AI Meetup with HeyGen, Vapi, and Modal</a>
+      <div class="meta">5:30–8:00 PM · Financial District, San Francisco, CA · 2.6 km <span class="cat">ai</span></div>
+      <div class="desc">Your AI agent doesn&#x27;t only generate text anymore.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/pgni1ixx" target="_blank">Enterprise AI Meetup - LTMs and Structured Data</a>
+      <div class="meta">5:30–9:00 PM · Financial District, San Francisco, CA · 2.1 km <span class="cat">ai</span></div>
+      <div class="desc">The event official landing page is on AICamp website .</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/iqs73qmu" target="_blank">MCP V2 RELEASE EVENT</a>
+      <div class="meta">5:30–9:00 PM · Yerba Buena, San Francisco, CA · 1.9 km <span class="cat">ai</span></div>
+      <div class="desc">The biggest revision of the Model Context Protocol since launch goes final today.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ane6jhtt" target="_blank">New Venture Formation</a>
+      <div class="meta">6:00–8:30 PM · Plug and Play Tech Center, 440 N Wolfe Rd, Sunnyvale, CA 94085, USA · 55.0 km <span class="cat">tech</span></div>
+      <div class="desc">New Venture Formation(NVF) Instructor: Douglas Park and guest speakers Former business professor, Stanford Lecturer, and bestselling author of Starting Startups: Integrate People, Product, and Position for Success Course Overview This…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/kdgxf1fs" target="_blank">AI Nerd Meet Up</a>
+      <div class="meta">6:00–9:00 PM · Dogpatch, San Francisco, CA · 1.5 km <span class="cat">ai</span></div>
+      <div class="desc">** Invite Only **​ Join us for an invite-only monthly meetup.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/w61gmib2" target="_blank">Intelligence in the Open — Edition 01: Reasoning, Evaluation &amp; Long-Horizon Agents</a>
+      <div class="meta">6:00–9:00 PM · Financial District, San Francisco, CA · 2.6 km <span class="cat">ai</span></div>
+      <div class="desc">Intelligence in the Open is a recurring MiniMax research series bringing together AI researchers, engineers, technical founders, and investors for candid conversations about the work shaping the next generation of intelligent systems.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/mylwoabu" target="_blank">LangChain SF Meetup: LLM Wikis and Giving Your Agents Memory</a>
+      <div class="meta">6:00–9:00 PM · Rincon Hill, San Francisco, CA · 1.8 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for an meetup in San Francisco with Brace Sproul (Head of Applied AI at LangChain), and Jacob Teo (Research &amp; Engineering at Cognition).</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ugfl1mn2" target="_blank">MCP Graduation Party</a>
+      <div class="meta">6:00–8:30 PM · Union Street, San Francisco, CA · 3.9 km <span class="cat">ai</span></div>
+      <div class="desc">On July 28, MCP graduates.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/2gizvh99" target="_blank">MemoryBox Beta Launch 🏓 AI that remembers. A party you won&#x27;t forget.</a>
+      <div class="meta">6:00–8:00 PM · SPIN San Francisco, 690 Folsom St #100, San Francisco, CA 94107, USA · 1.6 km <span class="cat">ai</span></div>
+      <div class="desc">You&#x27;ve explained your projects, your clients, your context to your AI tools dozens of times.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/uxf409wl" target="_blank">Physical AI over Coffee - Palo Alto</a>
+      <div class="meta">6:00–8:00 PM · The Treehouse, 459 Lagunita Dr, Stanford, CA 94305, USA · 43.6 km <span class="cat">ai</span></div>
+      <div class="desc">Coffee with Menlo Research.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/aiggb4qv" target="_blank">&quot;Spark Session: Build Night&quot; — a hands-on AI build event in Palo Alto</a>
+      <div class="meta">6:00–8:30 PM · 444 High St, Palo Alto, CA 94301, USA · 42.0 km <span class="cat">ai</span></div>
+      <div class="desc">Bring your laptop.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/koupjlaf" target="_blank">Women in AI Ethics &amp; Safety Summer Picnic!</a>
+      <div class="meta">6:00–8:00 PM · Berkeley, CA · 17.1 km <span class="cat">ai</span></div>
+      <div class="desc">Have a summer outfit that you haven&#x27;t been able to wear this season yet?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/5ppe7yap" target="_blank">Build Night - Visions of the Post-Labor Future</a>
+      <div class="meta">6:30–10:00 PM · 399 Webster St, San Francisco, CA 94117, USA · 2.3 km <span class="cat">tech</span></div>
+      <div class="desc">Do you have an idea of what the future of the world/post-labor economy would look like?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/samba-ev38" target="_blank">AI x Advertising: A Creative Industry Mixer</a>
+      <div class="meta">6:30–8:30 PM · 118 King St, San Francisco, CA 94107, USA · 1.5 km <span class="cat">ai</span></div>
+      <div class="desc">AI in Advertising @ Samba HQ Join us for a casual evening with others working across AI, advertising, media, and marketing.</div>
+    </div>
+    </div></div><div class="day-col" style="flex: 4 0 790px; min-width: 790px;"><div class="day-header">Wed, Jul 29 <span class="count">(41)</span></div><div class="event-list" style="column-count: 4;">
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/on-mercury-sf" target="_blank">on Mercury - SF</a>
+      <div class="meta">9:00–4:00 PM · SOHN, 2535 3rd St, San Francisco, CA 94107, USA · 2.0 km <span class="cat">tech</span></div>
+      <div class="desc">Bring the team.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/2fb07dnm" target="_blank">AI Breakfast @ Tesla hosted by Founders Bay x You.com</a>
+      <div class="meta">10:00–1:00 PM · Cathedral Hill, San Francisco, CA · 2.5 km <span class="cat">ai</span></div>
+      <div class="desc">AI Breakfast @ Tesla hosted by Founders Bay x You.com is an intimate morning gathering bringing together founders, operators, and AI builders for high-signal conversations over breakfast at the intersection of AI, engineering, and…</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/8eey207v" target="_blank">The CMO Table: An Executive Salon for Marketing Leaders</a>
+      <div class="meta">4:00–8:00 PM · Beresford Park, San Mateo, CA · 26.7 km <span class="cat">ai</span></div>
+      <div class="desc">The CMO Table: An Executive Salon for Marketing Leaders Hosted by GTM Leader Society, CMO Huddles &amp; Pepper Peninsula Golf Club, San Mateo · 4:00 PM – 8:00 PM Join us for The CMO Table, an exclusive evening bringing together 80 to 100 of…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/hggcw1a0" target="_blank">Duty Free Summer Patio</a>
+      <div class="meta">4:30–6:30 PM · Showplace Square, San Francisco, CA · 0.1 km <span class="cat">tech</span></div>
+      <div class="desc">Unwind and cool down with the reliability community!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/STEMconnectsocial" target="_blank">STEM Connect Social</a>
+      <div class="meta">5:00–7:00 PM · Fieldwork SF China Basin Park, 1 China Basin Pk Pathway, San Francisco, CA 94107, USA · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for an evening of connection, conversation, and community at STEM Connect !</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/dkt8j8kv" target="_blank">[AI Nexus × KASC Joint Colloquium] Bridge Builders</a>
+      <div class="meta">5:00–8:00 PM · EVGR, Building C, 726 Serra St, Stanford, CA 94305, USA · 43.9 km <span class="cat">ai</span></div>
+      <div class="desc">AI Nexus is hosting a special joint colloquium with KASC (Korea-America Student Conference) to explore how the next generation views AI, tech sovereignty, human agency, and Korea-U.S.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/5qcr5t8i" target="_blank">Bayview Tech Lab: AI for Marketing and Social Media</a>
+      <div class="meta">5:00–7:00 PM · Southeast Community Center, 1550 Evans Ave, San Francisco, CA 94124, USA · 3.4 km <span class="cat">ai</span></div>
+      <div class="desc">This hands-on workshop is designed to help entrepreneurs and small business owners leverage artificial intelligence to create content and get more customers through social media.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/9zero-qxgj" target="_blank">Marketers for Sustainability | Edition 5</a>
+      <div class="meta">5:00–8:00 PM · 9Zero Climate Innovation Hub, 350 California St 4th floor, San Francisco, CA 94104, USA · 2.6 km <span class="cat">ai</span></div>
+      <div class="desc">We are hosting the 5th edition of Marketers for Sustainability, an industry gathering for marketers working in sustainability and those looking to break into the space.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/wbw8lox8" target="_blank">Research Game Night: Belief State</a>
+      <div class="meta">5:00–8:00 PM · Union Square, San Francisco, California · 2.0 km <span class="cat">ai</span></div>
+      <div class="desc">AI research thrives on open exchange—but every room still contains hidden assumptions, competing incentives, and incomplete information.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ntcqcq2v" target="_blank">after hours: a happy hour for san francisco&#x27;s creatives and founders</a>
+      <div class="meta">5:30–7:30 PM · Toy Soldier, 52 Belden Pl, San Francisco, CA 94104, USA · 2.3 km <span class="cat">tech</span></div>
+      <div class="desc">for the creatives, the founders, the people still figuring it out.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/gmbwqj5a" target="_blank">Building data agents enterprise can actually trust</a>
+      <div class="meta">5:30–8:00 PM · Palo Alto, CA · 41.7 km <span class="cat">ai</span></div>
+      <div class="desc">Building Data Agents Enterprises Can Trust Private Executive AI Forum · Palo Alto Enterprise data agents are moving rapidly from demos to real deployments.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/39h51wb0" target="_blank">Bay Area Frontier Research Club #15 | Embodied AI (dinner + paper discussion @ Mission Robotics)</a>
+      <div class="meta">5:30–8:30 PM · Mission District, San Francisco, CA · 1.3 km <span class="cat">ai</span></div>
+      <div class="desc">Frontier Research Club is going physical — introducing the Embodied AI research track.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/cazn88f7" target="_blank">Can We Close the Sim2Real Gap?</a>
+      <div class="meta">5:30–9:00 PM · Mission District, San Francisco, CA · 1.1 km <span class="cat">ai</span></div>
+      <div class="desc">As embodied systems move from demos to deployment, the central question is becoming more technical and more controversial: can simulation, synthetic data, and world models replace enough real-world data to make Physical AI scale?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/tt11iz2u" target="_blank">@Machine Speed: Continuous Compliance for the Agentic Era</a>
+      <div class="meta">5:30–8:00 PM · Dogpatch, San Francisco, CA · 1.4 km <span class="cat">ai</span></div>
+      <div class="desc">AI agents are transforming how software is built and operated but security and compliance haven&#x27;t kept pace.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/zkdv1uoq" target="_blank">Telemetry-aware AI agents that act in Slack, Linear, and GitHub, without your production data leaving your cloud</a>
+      <div class="meta">5:30–8:00 PM · Mindspace Coworking San Francisco, 575 Market St, San Francisco, CA 94105, USA · 2.1 km <span class="cat">ai</span></div>
+      <div class="desc">Most AI observability assumes you&#x27;ll ship your telemetry to a vendor&#x27;s cloud so their model can reason over it.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/womentech-zku4" target="_blank">Women Tech Meetup: Do More With Less</a>
+      <div class="meta">5:30–8:30 PM · Rincon Hill, San Francisco, CA · 2.0 km <span class="cat">ai</span></div>
+      <div class="desc">AI is no longer just helping teams work faster—it&#x27;s becoming an active driver of growth.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/gwijwvwb" target="_blank">Co-Working Evening</a>
+      <div class="meta">6:00–8:00 PM · 488 Bryant St, San Francisco, CA 94107, USA · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">Join Vizcom for an evening of co-working to help you make real progress on whatever you’re building.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/2929v81u" target="_blank">Figma Field Days: SF Dev Night</a>
+      <div class="meta">6:00–9:00 PM · Notion HQ, 685 Market St, San Francisco, CA 94105, USA · 1.9 km <span class="cat">tech</span></div>
+      <div class="desc">Join us at Notion HQ for an evening of lightning talks from designers and engineers at Figma and Notion.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/monaco-sushiandsales" target="_blank">GTM Strategy with Sam Blond</a>
+      <div class="meta">6:00–8:00 PM · South Beach, San Francisco, CA · 1.3 km <span class="cat">tech</span></div>
+      <div class="desc">GTM strategy in the agentic era with Sam Blond and the Monaco team.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/inkle-razorpay" target="_blank">Inkle x Razorpay: Founders Meetup</a>
+      <div class="meta">6:00–8:00 PM · China Basin, San Francisco, CA · 1.6 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for an intimate evening bringing together founders and startup operators from across the Bay Area.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/7n999tuw" target="_blank">Sec Nerds: July 2026</a>
+      <div class="meta">6:00–9:00 PM · Casements Bar, 2351 Mission St, San Francisco, CA 94110, USA · 1.9 km <span class="cat">tech</span></div>
+      <div class="desc">July Sec Nerds.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/pxkpj4bi" target="_blank">TechWalk | Silicon Valley, 7/29</a>
+      <div class="meta">6:00–7:00 PM · Shoreline Lake, Mountain View, CA, USA · 46.5 km <span class="cat">tech</span></div>
+      <div class="desc">About TechWalk We&#x27;re building a different sort of networking event for members of the Tech and SaaS communities to get outside, meet new people, and enjoy some fresh air, while practicing mindful movement.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ds5ms3js" target="_blank">The Orange Dinner — SF Edition</a>
+      <div class="meta">6:00–9:00 PM · Flour + Water, 2401 Harrison St, San Francisco, CA 94110, USA · 1.5 km <span class="cat">tech</span></div>
+      <div class="desc">Consider this your antidote to the standard founder happy hour.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/mastra-vulp" target="_blank">Agent (After) Hour: Building Production Agents with Mastra + MongoDB</a>
+      <div class="meta">6:00–8:30 PM · Motoring Coffee, 1525 Union St, San Francisco, CA 94123, USA · 3.6 km <span class="cat">ai</span></div>
+      <div class="desc">Mastra and MongoDB are co-hosting an evening of talks and demos on building AI agents, followed by drinks.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/rcbdsa3s" target="_blank">AI 101 Series: The Skills Non-Technical People Need to Thrive in the AI Era</a>
+      <div class="meta">6:00–7:30 PM · Shack15, 1, Ferry Building, Suite 201, San Francisco, CA 94111, USA · 3.0 km <span class="cat">ai</span></div>
+      <div class="desc">AI is changing work fast, and if you’re not technical, it can feel messy, intimidating, and hard to keep up with.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/oup51oya" target="_blank">Customer Obsession in the AI Era ft. Granola</a>
+      <div class="meta">6:00–8:00 PM · Financial District, San Francisco, CA · 2.3 km <span class="cat">ai</span></div>
+      <div class="desc">Join us in person in SF!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/zjc6w3tp" target="_blank">Emergent Builders &amp; Bites. Open House EP1</a>
+      <div class="meta">6:00–9:00 PM · Jackson Square, San Francisco, CA · 2.7 km <span class="cat">ai</span></div>
+      <div class="desc">Emergent just closed our Series C — and that calls for a toast.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/acba26072" target="_blank">Inside Amazon Bedrock AgentCore: Architecture to Real-World Demo</a>
+      <div class="meta">6:00–8:15 PM · Workato, 1530 Page Mill Rd, Palo Alto, CA 94304, USA · 45.4 km <span class="cat">ai</span></div>
+      <div class="desc">Two sessions.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/jbhlld0m" target="_blank">Market Smarter, Not Harder: AI-Powered Marketing for Small Business</a>
+      <div class="meta">6:00–8:00 PM · FalconX Gateway, 691 S Milpitas Blvd Suite 217, Milpitas, CA 95035, USA · 59.4 km <span class="cat">ai</span></div>
+      <div class="desc">Practical Strategies to Attract Customers, Build Loyalty &amp; Stand Out 📅 Wednesday, July 29, 2026 🕕 6:00 PM – 8:00 PM 📍 Venture Dock – Milpitas 691 S Milpitas Blvd Ste 217, Milpitas, CA 🎟 Free Event About the Event Running a small business…</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/8zadlrai" target="_blank">Systems Engineering Is Too Slow | R&amp;D Leaders Dinner</a>
+      <div class="meta">6:00–9:00 PM · Evergreen Park, Palo Alto, California · 44.6 km <span class="cat">ai</span></div>
+      <div class="desc">Systems engineering is too slow.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/1tojomxv" target="_blank">Native Reading Room SF – #6</a>
+      <div class="meta">6:30–9:30 PM · Civic Center, San Francisco, California · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">Schedule: 6:30-6:45pm : Welcome + seating 6:45-7:15pm : Reading time 7:15-7:25pm : Presentation 7:30-9:00pm: Small group discussion + tea 9-9:30pm: have fun and chill!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/xp4e5b36" target="_blank">PEF Health Founders Dinner</a>
+      <div class="meta">6:30–9:30 PM · Absinthe Brasserie &amp; Bar, 398 Hayes St, San Francisco, CA 94102, USA · 1.9 km <span class="cat">tech</span></div>
+      <div class="desc">We&#x27;re excited to meet you.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/guz3e09z" target="_blank">San Rafael Hardware Happy Hour @ Pond Farm Brewing Co.</a>
+      <div class="meta">6:30–8:30 PM · Pond Farm Brewing Co., 1848 4th St, San Rafael, CA 94901, USA · 25.7 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for the San Rafael Hardware Happy Hour @ Pond Farm Brewing Co!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/revelo-san-francisco-072926" target="_blank">Tech Teams Today Fireside Chat with Webflow CEO, Linda Tong - San Francisco</a>
+      <div class="meta">6:30–8:30 PM · Tenderloin, San Francisco, CA · 1.8 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for an invite-only fireside chat where we&#x27;re bringing together a small group of senior engineering/product leaders for an evening of candid conversation and peer-level connection.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ni1biuhr" target="_blank">The Making of an Investor - Building A Career Across Finance and Venture with Jeffrey Lonsdale, Fmr. Managing Director, Founders Fund</a>
+      <div class="meta">6:30–7:30 PM · North Los Altos, Los Altos, CA · 50.3 km <span class="cat">tech</span></div>
+      <div class="desc">Series Seed is hosting an intimate dinner with Jeffrey Lonsdale, an investor and trader whose career spans the entire capital stack - from the trading desk to the cap table.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/7bm1ej4o" target="_blank">Agentic AI Kickoff Happy Hour | Hosted by Centific x AI Circle</a>
+      <div class="meta">6:30–8:30 PM · Financial District, San Francisco, CA · 2.5 km <span class="cat">ai</span></div>
+      <div class="desc">Join Centific and AI Circle for an after-work happy hour kicking off the Agentic AI Summit by UC Berkeley.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/m7lqzial" target="_blank">Agentic Happy Hour with GitKraken</a>
+      <div class="meta">6:30–9:30 PM · Dirty Habit, 12 4th St, San Francisco, CA 94103, USA · 1.7 km <span class="cat">ai</span></div>
+      <div class="desc">Agentic Happy Hour with GitKraken We&#x27;re in SF and we&#x27;re buying the drinks.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/0ws52exx" target="_blank">Hardware Founder Dinner with Rho @ Gigascale Capital | AI Infra, Data Centers, and Energy</a>
+      <div class="meta">6:30–8:30 PM · Rincon Hill, San Francisco, CA · 2.7 km <span class="cat">ai</span></div>
+      <div class="desc">We run large monthly hardware meetups, and people are asking for smaller, more intimate gatherings to connect further.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/513fkz7g" target="_blank">Scrappy AI Founders Go Karting (seed to series A)</a>
+      <div class="meta">6:30–9:00 PM · South San Francisco, CA · 14.4 km <span class="cat">ai</span></div>
+      <div class="desc">12 Scrappy Founders - outdoor endurance community for founders and investors in the Bay Area.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/olt49733" target="_blank">Modern C++</a>
+      <div class="meta">7:00–9:00 PM · Hacker Dojo, 855 Maude Ave, Mountain View, CA 94043, USA · 52.0 km <span class="cat">tech</span></div>
+      <div class="desc">This week: (not set on meetup, check schedule sheet) This event is always hosted in the classroom , there may be simultaneous events in the main room.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/vcn-45-bench" target="_blank">VCN #45: Bench</a>
+      <div class="meta">7:00–10:00 PM · Frontier Tower 🧑‍🚀, 995 Market St, San Francisco, CA 94103, USA · 1.4 km <span class="cat">ai</span></div>
+      <div class="desc">Heads up: this is a hands-on build night and bringing a laptop is mandatory.</div>
+    </div>
+    </div></div><div class="day-col" style="flex: 4 0 790px; min-width: 790px;"><div class="day-header">Thu, Jul 30 <span class="count">(65)</span></div><div class="event-list" style="column-count: 4;">
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/grid-7emd" target="_blank">Grid Innovation Hub Coffee Meetup (In-Person)</a>
+      <div class="meta">9:00–10:00 AM · 9Zero Climate Innovation Hub, 350 California St 4th floor, San Francisco, CA 94104, USA · 2.6 km <span class="cat">tech</span></div>
+      <div class="desc">Join the #1 Energy Tech Meetup in the Bay!</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/basssbc2026" target="_blank">BASS SBC 2026</a>
+      <div class="meta">9:00–5:30 PM · Stanford, CA · 43.1 km <span class="cat">ai</span></div>
+      <div class="desc">BASS is the in person focal point for Stanford&#x27;s Blockchain Ecosystem, inviting the industry&#x27;s foremost thought leaders at the intersection of AI, Finance, and Blockchain, as well as up and coming founders from the Stanford Ecosystem.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/hack-video-agent-context-graph-jul30-2026" target="_blank">Hack the Video Agent Context Graph (OpenAI + Neo4j + AWS + TwelveLabs)</a>
+      <div class="meta">9:30–8:00 PM · AWS Builder Loft, 525 Market St, Courtyard Entrance, 525 Market St, San Francisco, CA 94105, USA · 2.2 km <span class="cat">ai</span></div>
+      <div class="desc">Hack the Video Agent Context Graph Video is one of the hardest data types to search: hours of footage where everything you care about—what is shown, said, and written on screen—is locked inside frames nobody has time to watch.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/9ghlwmwk" target="_blank">AI Campus Safety Summit</a>
+      <div class="meta">10:30–2:30 PM · Emerald High School, 3600 Central Pkwy, Dublin, CA 94568, USA · 47.9 km <span class="cat">ai</span></div>
+      <div class="desc">Join us to explore the future of campus safety, security technology, and regional collaboration.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/builtdifferent-auth0-stripe" target="_blank">Built Different: Auth0 x Stripe Hackathon</a>
+      <div class="meta">12:00–7:30 PM · Okta, 100 1st St 6th floor, San Francisco, CA 94105, USA · 2.2 km <span class="cat">tech</span></div>
+      <div class="desc">Are you built different?</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/hack-yzqj" target="_blank">0g Hack VC Delarosa Builders Brunch</a>
+      <div class="meta">12:00–2:00 PM · 136 Stanford Shopping Center, Palo Alto, CA 94304, USA · 41.7 km <span class="cat">ai</span></div>
+      <div class="desc">Join 0G and Hack VC for the Builders Brunch at Delarosa during Science of Blockchain Conference (SBC) in Stanford.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/mem0-d589" target="_blank">Context Corner: A Lunch Series</a>
+      <div class="meta">12:00–1:00 PM · Financial District, San Francisco, CA · 2.3 km <span class="cat">ai</span></div>
+      <div class="desc">A small lunch for engineers and founders building in AI.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/nean97my" target="_blank">Agilent Imaging Seminar&amp; C10 Basic Training</a>
+      <div class="meta">2:00–4:00 PM · 1030 Brittan Ave, San Carlos, CA 94070, USA · 32.6 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for an overview of Agilent’s cell imaging solutions, including the Cytation™ imaging platforms and the xCELLigence® RTCA eSight system.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/7wx60rjq" target="_blank">July Community Meet &amp; Eat</a>
+      <div class="meta">2:00–3:30 PM · South of Seminary - Vintage Oaks, Menlo Park, CA · 41.0 km <span class="cat">tech</span></div>
+      <div class="desc">An informal way to network and meet others within the KSC Silicon Valley Community.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/h31n51wz" target="_blank">Lexi + elaichi + bio founders</a>
+      <div class="meta">3:00–4:00 PM · elaichi co. chai house, 360 3rd St Ste 101, San Francisco, CA 94107, USA · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">Bio startup founders and investors are invited to join Lexi Ventures for some of the best afternoon chai in San Francisco.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/claude-n3kh" target="_blank">San Francisco | Claude Code for Real Estate Workshop</a>
+      <div class="meta">3:00–4:30 PM · Financial District, San Francisco, CA · 2.6 km <span class="cat">ai</span></div>
+      <div class="desc">Please join me for a workshop designed for commercial real estate professionals on how to build with Claude Code.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/Best-Work-Of-Your-Life" target="_blank">Best Work Of Your Life</a>
+      <div class="meta">4:00–6:00 PM · 275 Brannan St, San Francisco, CA 94107, USA · 1.7 km <span class="cat">ai</span></div>
+      <div class="desc">GitHub Design Engineering spotlights Impeccable creator Paul Bakaus, Figma&#x27;s evals-first builder Dr.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/rc1p3z0s" target="_blank">CleanTech / GreenTech - INNOVIT Demo Day</a>
+      <div class="meta">4:30–8:00 PM · INNOVIT – Italian Innovation and Culture Hub, 710 Sansome St, San Francisco, CA 94111, USA · 2.9 km <span class="cat">tech</span></div>
+      <div class="desc">The systems that hold modern life together are failing faster than we&#x27;re fixing them: water, food, energy, all straining at once.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/reboot-agent-code-jul30-2026" target="_blank">Hack Night - Can Your Agent-Written Code Survive Production?</a>
+      <div class="meta">4:30–9:30 PM · Bright Data, 625 2nd St, San Francisco, CA 94107, USA · 1.6 km <span class="cat">ai</span></div>
+      <div class="desc">Can Your Agent-Written Code Survive Production?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/bootstrapped" target="_blank">Bootstrapped: Karthik Ravi</a>
+      <div class="meta">5:00–8:00 PM · Frontier Tower 🧑‍🚀, 995 Market St, San Francisco, CA 94103, USA · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">Ever heard that successful startups are like cockroaches?</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/kn6j9xyj" target="_blank">South Bay Systems: July Coffee Chat</a>
+      <div class="meta">5:00–6:00 PM · Plaza del Sol, 200 W Evelyn Ave, Sunnyvale, CA 94086, USA · 54.6 km <span class="cat">tech</span></div>
+      <div class="desc">Hope you&#x27;re all enjoying the summer!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/6zktrhvw" target="_blank">Spiderman: Brand New Day — Early Screening</a>
+      <div class="meta">5:00–8:00 PM · Alamo Drafthouse Cinema New Mission, 2550 Mission St, San Francisco, CA 94110, USA · 2.1 km <span class="cat">tech</span></div>
+      <div class="desc">Spiderman: Brand New Day at Alamo Drafthouse Peter Parker has been erased from the world&#x27;s memory — no friends, no family, nobody who remembers him.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/5l7c46l2" target="_blank">Courtside Connections for Solution Engineers 🏓</a>
+      <div class="meta">5:00–7:00 PM · Financial District, San Francisco, CA · 2.9 km <span class="cat">tech</span></div>
+      <div class="desc">An invite-only evening for Solutions Engineers in San Francisco.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/137rkbuc" target="_blank">AI Builders Pitch Night @ Brex</a>
+      <div class="meta">5:00–9:00 PM · South Beach, San Francisco, CA · 1.8 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for a high-energy, AI-focused pitch night bringing together bold founders, cutting-edge ideas, and top-tier investors.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/seamate-voiceai730" target="_blank">Bay Area Voice AI Night ｜Stepfun X Seamate</a>
+      <div class="meta">5:00–9:00 PM · 883 N Shoreline Blvd d100, Mountain View, CA 94043, USA · 49.6 km <span class="cat">ai</span></div>
+      <div class="desc">About the Event Voice AI Night is a Bay Area gathering for founders, builders, product leaders, and investors interested in how voice, multimodal AI, and real-time agents are changing the way people interact with products.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/2mdxha4i" target="_blank">DaVinci Cafe- Private Gathering on AI Infra</a>
+      <div class="meta">5:00–7:00 PM · Palo Alto, California · 45.1 km <span class="cat">ai</span></div>
+      <div class="desc">About DaVinci Cafe In a world driven by rapid technological shifts, innovation thrives at the convergence of disciplines.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/t86xub85" target="_blank">Demystifying AI in CX</a>
+      <div class="meta">5:00–9:00 PM · 4733 Chabot Dr suite 175, Pleasanton, CA 94588, USA · 44.9 km <span class="cat">ai</span></div>
+      <div class="desc">Demystifying AI in CX Thursday, July 30, 2026 · 5:00 PM – 7:30 PM 4733 Chabot Drive, Suite 175, Pleasanton, CA 94588 AI is changing customer experience faster than most teams can keep up.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/4yta9i2j" target="_blank">IREN AI Social</a>
+      <div class="meta">5:00–7:00 PM · China Basin, San Francisco, CA · 1.1 km <span class="cat">ai</span></div>
+      <div class="desc">IREN is hosting a happy hour for the people building in AI.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/h5x0pzw9" target="_blank">☕️ OpenAI Codex Community Meetup-San Francisco #8</a>
+      <div class="meta">5:00–8:00 PM · Stonestown, San Francisco, CA · 8.1 km <span class="cat">ai</span></div>
+      <div class="desc">OpenAI Codex community meetups San Francisco with Guest Speakers from OpenAI Codex Join us in 📍Sports Basement Stonestown, San Francisco for an evening designed for both beginners and experienced users to connect, learn, share demos, and…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/i3evxecn" target="_blank">Qualcomm x ZETIC x Liquid AI: Edge AI Builders Meetup</a>
+      <div class="meta">5:00–8:30 PM · Hanwha AI Center, 300 Grant Ave Ste 500, San Francisco, CA 94108, USA · 2.2 km <span class="cat">ai</span></div>
+      <div class="desc">We&#x27;re hosting a evening bringing together stakeholders across the Edge AI sector, hardware, AI companies, and products/services, so founders and builders can connect.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/z6dbzb5w" target="_blank">Startup Haven Founders Dinner + (Optional) Poker - Bay Area (Location: San Francisco Zipcode: 94121)</a>
+      <div class="meta">5:30–9:00 PM · Presidio of San Francisco, San Francisco, California · 6.3 km <span class="cat">tech</span></div>
+      <div class="desc">A night of dinner and networking with founders and investors.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/july-SF-Agents-APIs-meetup" target="_blank">Agents &amp; APIs SF Developer Meetup</a>
+      <div class="meta">5:30–7:30 PM · CANOPY Jackson Square, 595 Pacific Ave 4th floor, San Francisco, CA 94133, USA · 2.9 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for another awesome Agents and APIs Developer Meetup brought to you by Postman!</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/fpk4g0f6" target="_blank">ALICE Labs - Chez Panisse Private Dinner</a>
+      <div class="meta">5:30–8:00 PM · Chez Panisse, 1517 Shattuck Ave., Berkeley, CA 94709, USA · 16.9 km <span class="cat">ai</span></div>
+      <div class="desc">The ALICE Labs team is proud to invite you to join us at one of the bay area&#x27;s most celebrated culinary institutions - Chez Panisse!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/715ul99e" target="_blank">Builder Night</a>
+      <div class="meta">5:30–8:30 PM · 660 Market St, San Francisco, CA 94104, USA · 2.0 km <span class="cat">ai</span></div>
+      <div class="desc">WorkOS x Pieces is a live demo night in San Francisco for people building, evaluating, or trying to better understand the infrastructure behind AI agents.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/unzyev3c" target="_blank">EnterpriseMCP Night Series at Workato</a>
+      <div class="meta">5:30–8:30 PM · Dogpatch, San Francisco, California · 1.7 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for Enterprise MCP Night at Workato, an evening of hands-on demos and candid conversations from technical practitioners building real world agentic solutions on MCP.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/hs3x4zt6" target="_blank">From Agents to Teams: The Future of Multi-Agent Systems</a>
+      <div class="meta">5:30–8:00 PM · South Beach, San Francisco, CA · 1.5 km <span class="cat">ai</span></div>
+      <div class="desc">What happens when AI agents start working together?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/4g3wb753" target="_blank">Startup Reality 202: AI in Industries — From Foundation Models to Vertical Moats</a>
+      <div class="meta">5:30–8:00 PM · Financial District, San Francisco, CA · 2.6 km <span class="cat">ai</span></div>
+      <div class="desc">🚀 The 2nd Event of the NATEA Silicon Valley 3-Part Startup Series Beyond the giant AI labs, San Francisco is home to world-class startups quietly transforming diverse industries in every corner.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ayh2zrej" target="_blank">Circuit Launch Masterclass Series: Raising Capital 101 with Professor PK</a>
+      <div class="meta">6:00–8:30 PM · Circuit Launch, 599 Fairchild Dr, Mountain View, CA 94043, USA · 51.4 km <span class="cat">tech</span></div>
+      <div class="desc">Gearing up to raise your first round of capital or looking to demystify the Silicon Valley fundraising machine?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/x16jv1ke" target="_blank">Founder Night Cafe ☕ 🍜</a>
+      <div class="meta">6:00–10:00 PM · Dogpatch, San Francisco, CA · 1.6 km <span class="cat">tech</span></div>
+      <div class="desc">Come wind down (or power through) at Patchworks after hours.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/frzdck41" target="_blank">Late Night C.H.I.P Sessions</a>
+      <div class="meta">6:00–9:00 PM · Union Square, San Francisco, CA · 2.0 km <span class="cat">tech</span></div>
+      <div class="desc">Welcome to the C.H.I.P Sessions (SF Edition) Where people Collaborate.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/w6lxbdj8" target="_blank">SciFi Tech Club: Nexus with Ramez Naam + Special Guest TBA</a>
+      <div class="meta">6:00–9:00 PM · SoMa, San Francisco, CA · 2.4 km <span class="cat">tech</span></div>
+      <div class="desc">Join us for a Special Edition of http://scifitechclub.com SciFi Tech Club, a group where we discuss the technology behind our favorite Science Fiction Books and Movies.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/6s94ze2o" target="_blank">AI Founder Dinner: Founder Mindset</a>
+      <div class="meta">6:00–8:30 PM · Pacific Heights, San Francisco, CA · 3.4 km <span class="cat">ai</span></div>
+      <div class="desc">An intimate dinner with a curated group of AI founders in the Bay Area interested in sharing ideas on founder mindset.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/x8s86vgl" target="_blank">Bay Area Drug Safety Meetup</a>
+      <div class="meta">6:00–8:30 PM · 47 Hills Brewing Company, 137 S Linden Ave, South San Francisco, CA 94080, USA · 14.1 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for a gathering of the unsung heroes of drug development: drug safety and pharmacovigilance professionals.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/JulyDynamoAfterHours" target="_blank">Dynamo After Hours</a>
+      <div class="meta">6:00–9:00 PM · SoMa, San Francisco, CA · 0.3 km <span class="cat">ai</span></div>
+      <div class="desc">Overview Join us for a high-signal night with the NVIDIA developer community—built for developers pushing the limits of AI systems, inference, and scale.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/buglxp02" target="_blank">Finance Leader Dinner at Wayfare Tavern with Vayu, PwC &amp; Abacum</a>
+      <div class="meta">6:00–9:00 PM · Wayfare Tavern, 201 Pine St, San Francisco, CA 94111, USA · 2.4 km <span class="cat">ai</span></div>
+      <div class="desc">Some rooms are built for this.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/gtpyywjl" target="_blank">From Advising to Building: Making the Move into Growth Strategy</a>
+      <div class="meta">6:00–8:00 PM · Showplace Square, San Francisco, CA · 0.5 km <span class="cat">ai</span></div>
+      <div class="desc">Curious what it&#x27;s like to leave consulting for an operator role at a hypergrowth AI company?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/36y93kyx" target="_blank">Mercor Enterprise Applied AI Happy Hour</a>
+      <div class="meta">6:00–8:00 PM · SoMa, San Francisco, CA · 2.3 km <span class="cat">ai</span></div>
+      <div class="desc">Curious about building AI that actually makes it into production?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/lpt8zwwz" target="_blank">Proxima Supper Series</a>
+      <div class="meta">6:00–9:00 PM · 1625 Post St, San Francisco, CA 94115, USA · 2.8 km <span class="cat">ai</span></div>
+      <div class="desc">The Proxima Supper Series brings together an intimate group of senior healthcare leaders for an off-the-record dinner conversation you won&#x27;t find anywhere else.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/7h2hjufc" target="_blank">Scaling revenue at Stripe and Vercel with Jeanne DeWitt Grosser (COO, Vercel)</a>
+      <div class="meta">6:00–8:00 PM · Northern Waterfront, San Francisco, CA · 3.0 km <span class="cat">ai</span></div>
+      <div class="desc">Baseten is proud to present Heavyweights, a series of talks where AI founders learn from the greats.</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ir1t9z73" target="_blank">Taste: A Physical AI Data Happy Hour</a>
+      <div class="meta">6:00–9:00 PM · Embarcadero, San Francisco, CA · 3.3 km <span class="cat">ai</span></div>
+      <div class="desc">Unusual Ventures &amp; HumanSignal invite you to &quot;Taste: A Physical AI Data Happy Hour&quot; Topic: The data machines can&#x27;t make for themselves Unusual Ventures and HumanSignal invite you to an evening of drinks, tastings, and real conversation…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/8f9asrzr" target="_blank">The Future of Technical Documentation</a>
+      <div class="meta">6:00–7:30 PM · Twilio, 101 Spear St 5th floor, San Francisco, CA 94105, USA · 2.6 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for an evening of practical talks and networking as we explore the future of the technical writing profession.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/TPT_Robotics_SBC" target="_blank">The Private Table: Robotics Founders Dinner @ SBC</a>
+      <div class="meta">6:00–8:00 PM · Palo Alto, CA · 41.7 km <span class="cat">ai</span></div>
+      <div class="desc">Join 0G for an exclusive, invite-only dinner bringing together robotics founders, AI builders, investors, and industry leaders during Science of Blockchain (SBC).</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/1oal28z8" target="_blank">V11 Seminar Series | Financing the Nuclear Energy Buildout</a>
+      <div class="meta">6:00–8:00 PM · Financial District, San Francisco, CA · 2.5 km <span class="cat">ai</span></div>
+      <div class="desc">Everyone agrees the AI buildout needs firm power to succeed, and everyone&#x27;s favorite answer is nuclear.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/nyx9qeea" target="_blank">Meet the Makers: Robotics Edition</a>
+      <div class="meta">6:00–9:00 PM · Nordic Innovation House, 470 Ramona St, Palo Alto, CA 94301, USA · 41.9 km <span class="cat">ai</span></div>
+      <div class="desc">The future of robotics isn&#x27;t coming - it&#x27;s already here, and it&#x27;s being built right now.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/pax-silica-3" target="_blank">Pax Silica Dinner – SF, 30 July</a>
+      <div class="meta">6:00–10:00 PM · North Beach, San Francisco, CA · 2.8 km <span class="cat">ai</span></div>
+      <div class="desc">Pax Silica is a private dinner for founders, operators, investors and cultural connectors shaping the physical substrate of frontier AI from compute and energy to materials, cooling and supply chains across the East-West corridor.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/gp7e27fr" target="_blank">DATA STRUCTURES &amp; ALGORITHMS STUDY GROUP</a>
+      <div class="meta">6:30–8:00 PM · Hacker Dojo, 855 Maude Ave, Mountain View, CA 94043, USA · 52.0 km <span class="cat">tech</span></div>
+      <div class="desc">Join our biweekly data structures &amp; algorithms study group!</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/18x0l0ea" target="_blank">HYSTA Founders Club Pitch Night</a>
+      <div class="meta">6:30–9:00 PM · Mountain View, California · 51.1 km <span class="cat">tech</span></div>
+      <div class="desc">Monthly HYSTA Founders Club Pitch Night.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/qetzx6du" target="_blank">MapTime: One Part Show &amp; Tell, One Part Meet Your People Night</a>
+      <div class="meta">6:30–8:00 PM · Mission District, San Francisco, CA · 1.7 km <span class="cat">tech</span></div>
+      <div class="desc">Thursday 30 July at 6:30 pm-8 pm PT One part show &amp; tell, one part meet-your-people night for anyone who’s ever gotten a little too excited about a good map.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/a3puqwm0" target="_blank">PyLadies San Francisco July Meetup</a>
+      <div class="meta">6:30–9:30 PM · Civic Center, San Francisco, CA · 1.3 km <span class="cat">tech</span></div>
+      <div class="desc">Event Agenda 6:30 pm: Networking and Snacks 7:25 pm: Welcome and Community Announcements 7:30 pm: Sponsor Presentation from IconAI: Getting Dressed Should Not Be This Hard--Why you need an AI stylist in your life Speaker: Krisztian Fockter…</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/db3xynd2" target="_blank">SF Creatives Night: Hard Launch x Osmo x a16z New Media</a>
+      <div class="meta">6:30–9:30 PM · Mission District, San Francisco, CA · 1.4 km <span class="cat">tech</span></div>
+      <div class="desc">We spend our days making things for other people’s visions, but this is a night for yours.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/8k55fy3x" target="_blank">Agents Over Drinks — with Tony Stoyanov (EliseAI)</a>
+      <div class="meta">6:30–9:30 PM · Mission District, San Francisco, CA · 2.1 km <span class="cat">ai</span></div>
+      <div class="desc">Grab a drink and talk shop with other people building AI in the real world.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/kh7opvpz" target="_blank">Building the Future of Creative AI</a>
+      <div class="meta">6:30–8:30 PM · Tenderloin, San Francisco, CA · 1.6 km <span class="cat">ai</span></div>
+      <div class="desc">Co-hosted by Sonilo and B Capital, this curated gathering brings together founders, researchers, investors, creators, and operators shaping the next generation of creative AI.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/8d3cu58d" target="_blank">The Future of Knowledge Work</a>
+      <div class="meta">6:30–9:00 PM · SoMa, San Francisco, CA · 1.1 km <span class="cat">ai</span></div>
+      <div class="desc">An invite-only dinner for the people building the next generation of coding and knowledge-work agents.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/or8rjrri" target="_blank">The Rise of AI Field Engineers (FDEs)</a>
+      <div class="meta">6:30–9:30 PM · 1250 Borregas Ave, Sunnyvale, CA 94089, USA · 52.6 km <span class="cat">ai</span></div>
+      <div class="desc">As AI companies move from impressive demos to real-world enterprise deployment, the hardest problems are no longer just about model quality.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/xy4u291d" target="_blank">AI Control and Security Experts Dinner</a>
+      <div class="meta">7:00–9:30 PM · Financial District, San Francisco, CA · 2.8 km <span class="cat">ai</span></div>
+      <div class="desc">Join us for an exclusive, sit-down, small group dinner with AI control and security researchers and practitioners to exchange ideas on current research directions, open problems, and real-world implications.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/bluedot-sf-launch" target="_blank">BlueDot SF Launch</a>
+      <div class="meta">7:00–10:00 PM · Civic Center, San Francisco, CA · 1.8 km <span class="cat">ai</span></div>
+      <div class="desc">We made it.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/bw2q8rbz" target="_blank">Gen&amp;Juice - San Francisco Summer</a>
+      <div class="meta">7:00–10:00 PM · Canopy by Hilton San Francisco SoMa, 250 4th St, San Francisco, CA 94103, USA · 1.3 km <span class="cat">ai</span></div>
+      <div class="desc">Are you an AI Filmmaker?</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/2d5os4pf" target="_blank">Mapping the Invisible: The Future of Geospatial Intelligence</a>
+      <div class="meta">7:00–9:00 PM · Donkey &amp; Goat Winery, 1340 Fifth St, Berkeley, CA 94710, USA · 14.9 km <span class="cat">ai</span></div>
+      <div class="desc">🛰️ What if we could see the invisible forces shaping our cities?</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/j1x0xf7t" target="_blank">YC S26 Laser Tag</a>
+      <div class="meta">7:15–8:15 PM · Stonestown, San Francisco, CA · 8.2 km <span class="cat">tech</span></div>
+      <div class="desc">S26 batch, ready for some fun?</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/loop-fest" target="_blank">Loop-fest: Show Off Your Best Loop</a>
+      <div class="meta">7:30–9:30 PM · Frontier Tower 🧑‍🚀, 995 Market St, San Francisco, CA 94103, USA · 1.4 km <span class="cat">ai</span></div>
+      <div class="desc">Show off your best loop.</div>
+    </div>
+    </div></div><div class="day-col" style="flex: 2 0 390px; min-width: 390px;"><div class="day-header">Fri, Jul 31 <span class="count">(23)</span></div><div class="event-list" style="column-count: 2;">
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/Palo-Alto-July" target="_blank">Palo Alto, CA - Deep Tech Connections Networking Breakfast</a>
+      <div class="meta">8:30–10:30 AM · Palo Alto, California · 44.9 km <span class="cat">tech</span></div>
+      <div class="desc">You are invited!</div>
+    </div>
+    
+    <div class="event hl-mid" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/lw3yu303" target="_blank">Founder Run Club – The Panhandle Pacers</a>
+      <div class="meta">9:00–10:30 AM · Panhandle, San Francisco, CA · 4.0 km <span class="cat">tech</span></div>
+      <div class="desc">About the Panhandle Pacers Founder Run Club: Bring a friend, your running shoes, and come start the day with the founder community.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/kyabrunch" target="_blank">KYA brunch hosted by Persona</a>
+      <div class="meta">9:00–11:00 AM · Mission District, San Francisco, CA · 2.2 km <span class="cat">ai</span></div>
+      <div class="desc">Everyone&#x27;s racing to figure out how to adapt to agentic commerce and enterprise agents.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/ggkzzvmb" target="_blank">AI Safety Career Pivot Office Hours</a>
+      <div class="meta">11:00–3:00 PM · Mox, 1680 Mission St, San Francisco, CA 94103, USA · 1.5 km <span class="cat">ai</span></div>
+      <div class="desc">Sign-up sheet here .</div>
+    </div>
+    
+    <div class="event far" style="border-color: #4a90d9;">
+      <a href="https://lu.ma/y1pdtumx" target="_blank">BrainTech - The Next Big Opportunity - Learn from a VC</a>
+      <div class="meta">11:45–1:45 PM · Livermore, CA · 62.0 km <span class="cat">tech</span></div>
+      <div class="desc">About the Session We know more about the surface of Mars than about the organ reading this sentence.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/4y341ygz" target="_blank">Founders Guide To San Francisco</a>
+      <div class="meta">2:00–5:00 PM · Union Square, San Francisco, CA, USA · 1.9 km <span class="cat">tech</span></div>
+      <div class="desc">New to San Francisco and trying to figure out how to stretch your startup runway further?</div>
+    </div>
+    
+    <div class="event far" style="border-color: #f0a202;">
+      <a href="https://lu.ma/roicnpmq" target="_blank">Parallax Angels 001 — An Afternoon at the Water Temple</a>
+      <div class="meta">2:00–5:00 PM · Redwood City, CA · 32.6 km <span class="cat">tech</span></div>
+      <div class="desc">A new kind of angel community begins here.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/e401hp6y" target="_blank">Rich People Meetup</a>
+      <div class="meta">2:00–7:15 PM · South Park, San Francisco, CA · 1.5 km <span class="cat">tech</span></div>
+      <div class="desc">An invite-only gathering for ultra rich people in tech and finance in San Francisco.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/sa2k7wlg" target="_blank">Yale Hacker House Finale</a>
+      <div class="meta">2:00–4:00 PM · 1256 Pine St, San Francisco, CA 94109, USA · 2.5 km <span class="cat">tech</span></div>
+      
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/gu9j7qkl" target="_blank">StarOS Presents BuildDeployWin: Hands-On AI Coding Workshop</a>
+      <div class="meta">2:00–5:00 PM · Bright Data, 625 2nd St, San Francisco, CA 94107, USA · 1.6 km <span class="cat">ai</span></div>
+      <div class="desc">One Idea.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/pwp19v9g" target="_blank">SoMA Manufacturing-Tech BBQ</a>
+      <div class="meta">3:00–6:00 PM · SoMa, San Francisco, CA · 0.7 km <span class="cat">tech</span></div>
+      <div class="desc">Ever since our friends at Westmag brought the masses to the SoMa Hard-Tech Costco Hotdog Meetup, it got us thinking....</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/1f7vdfje" target="_blank">Moms Who AI: Open Studio (July)</a>
+      <div class="meta">3:00–5:00 PM · SoMa, San Francisco, CA · 1.7 km <span class="cat">ai</span></div>
+      <div class="desc">Bring a project.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #f0a202;">
+      <a href="https://lu.ma/uu0hnz52" target="_blank">Unified Control Plane for the Agentic Enterprise</a>
+      <div class="meta">4:30–7:30 PM · University of San Francisco - Downtown Campus, 101 Howard St, San Francisco, CA 94105, USA · 2.4 km <span class="cat">ai</span></div>
+      <div class="desc">Join SafeAlign AI at the University of San Francisco Downtown Campus for a focused conversation on what it takes to build a unified control plane for the agentic enterprise.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/owow-8fk3" target="_blank">Process Technology Leaders Network - invite only</a>
+      <div class="meta">5:00–9:00 PM · Signia by Hilton San Jose, 170 S Market St, San Jose, CA 95113, USA · 66.5 km <span class="cat">tech</span></div>
+      <div class="desc">A Private Evening Built for Process Engineers.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/pai-ov79" target="_blank">🏕️🚀 AINative Startup Camp — Build an AI-Native Startup in a Weekend</a>
+      <div class="meta">5:00–8:00 PM · Mission District, San Francisco, CA · 1.5 km <span class="cat">ai</span></div>
+      <div class="desc">Build.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/2j2qnqny" target="_blank">Friday Aperitivos @ The Fold</a>
+      <div class="meta">5:00–7:00 PM · The Fold, 3359 26th St, San Francisco, CA 94110, USA · 2.7 km <span class="cat">food</span></div>
+      <div class="desc">Casual Hangs • Creative Libations • Community End your week with friends and fellow &quot;Folders&quot; at our Friday Aperitivo!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/pfao2odm" target="_blank">Filipino Founders and Funders Monthly Mixer</a>
+      <div class="meta">6:00–9:00 PM · Financial District, San Francisco, CA · 2.9 km <span class="cat">tech</span></div>
+      <div class="desc">From Silicon Valley to Sinigang Valley — hosting our monthly mixer with the Filipino Founders and Funders (FFF) community.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/xoox2g4l" target="_blank">Architect Labs - Chips &amp; Dip</a>
+      <div class="meta">6:00–8:00 PM · Downtown North, Palo Alto, CA · 42.1 km <span class="cat">ai</span></div>
+      <div class="desc">Stop by Architect Labs HQ after ICLAD, watch some cool demos, and hang out with other researchers across AI, chip design, and systems over drinks and light snacks.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/yjltm5y2" target="_blank">Beyond Founder-Led Sales: A Closed-Door GTM Session</a>
+      <div class="meta">6:30–9:30 PM · Financial District, San Francisco, CA · 2.7 km <span class="cat">tech</span></div>
+      <div class="desc">Somewhere between finding your first customers and building a repeatable GTM engine, things get messy.</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ensub4g1" target="_blank">The Non-Billable Hour: Cocktails with Arceus 🍸</a>
+      <div class="meta">6:30–9:00 PM · Union Square, San Francisco, CA · 2.2 km <span class="cat">tech</span></div>
+      <div class="desc">Cheers to a beautiful evening with Arceus!</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/ic6639ja" target="_blank">[PATCH v2] Linux Kernel &amp; eBPF Meetup</a>
+      <div class="meta">7:00–11:00 PM · Los Altos Library, 13 S San Antonio Rd, Los Altos, CA 94022, USA · 50.3 km <span class="cat">tech</span></div>
+      <div class="desc">The second gathering of the SF Bay Area Linux Kernel &amp; eBPF community, hosted at the Los Altos Library.</div>
+    </div>
+    
+    <div class="event far" style="border-color: #8e44ad;">
+      <a href="https://lu.ma/qqsaoh0w" target="_blank">ALICE Labs - Chez Panisse Private Dinner</a>
+      <div class="meta">8:30–11:00 PM · Chez Panisse, 1517 Shattuck Ave., Berkeley, CA 94709, USA · 16.9 km <span class="cat">ai</span></div>
+      <div class="desc">The ALICE Labs team is proud to invite you to join us at one of the bay area&#x27;s most celebrated culinary institutions - Chez Panisse!</div>
+    </div>
+    
+    <div class="event hl-near" style="border-color: #2c3e50;">
+      <a href="https://lu.ma/chc750ix" target="_blank">Atlantic @ e2vc: Summer After Dark</a>
+      <div class="meta">9:00–11:00 PM · e2vc, 545 2nd St, San Francisco, CA 94107, USA · 1.6 km <span class="cat">tech</span></div>
+      <div class="desc">Atlantic at e2vc: Summer After Dark Complimentary cocktails.</div>
+    </div>
+    </div></div></div>
+</body>
+</html>
