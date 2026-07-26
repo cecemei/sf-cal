@@ -2,25 +2,71 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Luma Discovery Feed</title>
+<title>Discovery Feed</title>
 <style>
-  body { font-family: -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 16px; color: #1a1a1a; }
+  :root {
+    --paper: #ffffff; --ink: #1a1a1a; --ink-soft: #666666; --line: #dddddd; --link: #0645ad;
+    --cat-bg: #f0f0f0; --hl-near-bg: #c8f0c0; --hl-near-border: #3f9142; --hl-mid-bg: #eceff1;
+    --hl-mid-border: #9aa0a6; --hl-near-link: #2f6627; --hl-mid-link: #52585e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14181a; --ink: #e7e9ea; --ink-soft: #9aa3a8; --line: #2c3336; --link: #7fb0ff;
+      --cat-bg: #232a2d; --hl-near-bg: #1f3d1a; --hl-near-border: #5cba54; --hl-mid-bg: #262b2e;
+      --hl-mid-border: #7a8288; --hl-near-link: #8fd685; --hl-mid-link: #c3c9ce;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #14181a; --ink: #e7e9ea; --ink-soft: #9aa3a8; --line: #2c3336; --link: #7fb0ff;
+    --cat-bg: #232a2d; --hl-near-bg: #1f3d1a; --hl-near-border: #5cba54; --hl-mid-bg: #262b2e;
+    --hl-mid-border: #7a8288; --hl-near-link: #8fd685; --hl-mid-link: #c3c9ce;
+  }
+  :root[data-theme="light"] {
+    --paper: #ffffff; --ink: #1a1a1a; --ink-soft: #666666; --line: #dddddd; --link: #0645ad;
+    --cat-bg: #f0f0f0; --hl-near-bg: #c8f0c0; --hl-near-border: #3f9142; --hl-mid-bg: #eceff1;
+    --hl-mid-border: #9aa0a6; --hl-near-link: #2f6627; --hl-mid-link: #52585e;
+  }
+  body { font-family: -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 16px; color: var(--ink); background: var(--paper); }
   h1 { font-size: 1.4rem; }
-  h2 { font-size: 1rem; color: #555; margin-top: 2.5rem; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  h2 { font-size: 1rem; color: var(--ink-soft); margin-top: 2.5rem; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
   .event { padding: 8px 10px; border-radius: 6px; margin: 6px 0; border: 1px solid transparent; border-left: 4px solid #ccc; }
-  .event a { font-weight: 600; text-decoration: none; color: #0645ad; }
-  .event a:hover { text-decoration: underline; }
-  .meta { color: #666; font-size: 0.85rem; margin-top: 2px; }
-  .desc { color: #333; font-size: 0.85rem; margin-top: 4px; }
-  .cat { display: inline-block; background: #f0f0f0; border-radius: 4px; padding: 1px 6px; font-size: 0.75rem; margin-right: 4px; }
-  .hl-near { background: #ffe082; border-color: #c98f00; }
-  .hl-mid { background: #eaf3ff; border-color: #90b8e0; }
-  .hl-far { opacity: 0.45; }
-  .hl-far a { color: #5b6b88; }
+  .event a { font-weight: 600; text-decoration: none; color: var(--link); }
+  .event a:hover, .event a:focus-visible { text-decoration: underline; }
+  .meta { color: var(--ink-soft); font-size: 0.85rem; margin-top: 2px; }
+  .desc { color: var(--ink); opacity: 0.85; font-size: 0.85rem; margin-top: 4px; }
+  .cat { display: inline-block; background: var(--cat-bg); border-radius: 4px; padding: 1px 6px; font-size: 0.75rem; margin-right: 4px; }
+  .hl-near { background: var(--hl-near-bg); }
+  .hl-near a { color: var(--hl-near-link); }
+  .hl-mid { background: var(--hl-mid-bg); }
+  .hl-mid a { color: var(--hl-mid-link); }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 28px; margin: 16px 0 14px; }
+  .legend { display: flex; flex-direction: column; gap: 6px; }
+  .legend-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.8; }
+  .legend-items { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 0.8rem; color: var(--ink-soft); }
+  .legend-items div { display: flex; align-items: center; white-space: nowrap; }
+  .legend-items span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; flex-shrink: 0; }
 </style>
 </head>
 <body>
-<h1>Luma Discovery Feed</h1>
+<h1>Discovery Feed</h1>
+<div class="legend-row">
+  <div class="legend">
+    <div class="legend-label">Distance</div>
+    <div class="legend-items">
+      <div><span style="background: #c8f0c0; border: 1px solid #3f9142;"></span>Within 3 km</div>
+      <div><span style="background: #eceff1; border: 1px solid #9aa0a6;"></span>Within 8 km</div>
+      <div><span style="background: none; border: 1px solid var(--line);"></span>Farther</div>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="legend-label">Time of day (left edge)</div>
+    <div class="legend-items">
+      <div><span style="background: #4a90d9;"></span>Morning</div>
+      <div><span style="background: #f0a202;"></span>Afternoon</div>
+      <div><span style="background: #8e44ad;"></span>Evening</div>
+    </div>
+  </div>
+</div>
 <h2>New on Sat, Jul 25 at 7:07 PM (8 events)</h2>
 
     <div class="event hl-near" style="border-left-color: #8e44ad;">
