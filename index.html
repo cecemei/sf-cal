@@ -20,8 +20,6 @@
     --standout-badge-bg: #f5ecd9;
     --standout-badge-ink: #7a5b1e;
     --scrollbar-track: #e4e6e8;
-    --scrollbar-thumb: #a7adb3;
-    --scrollbar-thumb-hover: #888f96;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -39,8 +37,6 @@
       --standout-badge-bg: #332c1c;
       --standout-badge-ink: #e0c080;
       --scrollbar-track: #262c30;
-      --scrollbar-thumb: #4d565c;
-      --scrollbar-thumb-hover: #6b747a;
     }
   }
   :root[data-theme="dark"] {
@@ -48,14 +44,14 @@
     --link: #9fb9d9; --cat-bg: #232a2d; --hl-near-bg: #182a3d; --hl-near-border: #5487b8;
     --hl-mid-bg: #1a2126; --hl-mid-border: #3f4c58;
     --standout-border: #8a734a; --standout-badge-bg: #332c1c; --standout-badge-ink: #e0c080;
-    --scrollbar-track: #262c30; --scrollbar-thumb: #4d565c; --scrollbar-thumb-hover: #6b747a;
+    --scrollbar-track: #262c30;
   }
   :root[data-theme="light"] {
     --paper: #ffffff; --ink: #1a1a1a; --ink-soft: #666666; --line: #dddddd;
     --link: #3a5a82; --cat-bg: #f0f0f0; --hl-near-bg: #c9e0f5; --hl-near-border: #5f92c0;
     --hl-mid-bg: #eef4fa; --hl-mid-border: #b9cfe3;
     --standout-border: #c9ab6b; --standout-badge-bg: #f5ecd9; --standout-badge-ink: #7a5b1e;
-    --scrollbar-track: #e4e6e8; --scrollbar-thumb: #a7adb3; --scrollbar-thumb-hover: #888f96;
+    --scrollbar-track: #e4e6e8;
   }
   body { font-family: ui-rounded, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; max-width: 2000px; margin: 24px auto; padding: 0 24px; color: var(--ink); background: var(--paper); }
   h1 { font-size: 1.4rem; }
@@ -94,10 +90,24 @@
   .week-grid::-webkit-scrollbar { height: 8px; }
   .week-grid::-webkit-scrollbar-track { background: transparent; }
   .week-grid::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
-  .top-scroll { position: relative; height: 10px; margin: 4px 0 16px; border-radius: 999px; background: var(--scrollbar-track); cursor: pointer; }
-  .top-scroll-thumb { position: absolute; top: 0; left: 0; height: 100%; min-width: 30px; border-radius: 999px; background: var(--scrollbar-thumb); cursor: grab; }
-  .top-scroll-thumb:hover { background: var(--scrollbar-thumb-hover); }
-  .top-scroll-thumb.dragging { cursor: grabbing; background: var(--scrollbar-thumb-hover); }
+  .top-scroll { position: relative; height: 12px; margin: 4px 0 16px; border-radius: 999px; background: var(--scrollbar-track); cursor: pointer; }
+  .top-scroll-thumb {
+    position: absolute; top: 0; left: 0; height: 100%; min-width: 34px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ff6ec7, #7c5cff, #4fd1c5, #ff6ec7);
+    background-size: 300% 100%;
+    animation: top-scroll-shimmer 5s ease-in-out infinite;
+    box-shadow: 0 0 10px rgba(124, 92, 255, 0.5);
+    cursor: grab;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .top-scroll-thumb:hover { box-shadow: 0 0 16px rgba(124, 92, 255, 0.75); transform: scaleY(1.2); }
+  .top-scroll-thumb.dragging { cursor: grabbing; box-shadow: 0 0 20px rgba(124, 92, 255, 0.9); transform: scaleY(1.3); }
+  @keyframes top-scroll-shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
 </style>
 </head>
 <body>
@@ -1298,7 +1308,7 @@
       var trackWidth = track.clientWidth;
       var visible = weekGrid.clientWidth;
       var total = weekGrid.scrollWidth;
-      var thumbWidth = Math.max(30, trackWidth * Math.min(1, visible / total));
+      var thumbWidth = Math.max(34, trackWidth * Math.min(1, visible / total));
       var maxThumbLeft = trackWidth - thumbWidth;
       var maxScrollLeft = total - visible;
       var scrollRatio = maxScrollLeft > 0 ? weekGrid.scrollLeft / maxScrollLeft : 0;
