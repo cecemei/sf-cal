@@ -6,33 +6,29 @@
 <style>
   :root {
     --paper: #ffffff; --ink: #1a1a1a; --ink-soft: #666666; --line: #dddddd; --link: #0645ad;
-    --cat-bg: #f0f0f0; --hl-near-bg: #dfeee0; --hl-near-border: #7aab7c; --hl-mid-bg: #eceff1;
-    --hl-mid-border: #9aa0a6; --hl-near-link: #3f7a45; --hl-mid-link: #52585e;
-    --standout-border: #c99a3f; --standout-glow: rgba(201, 154, 63, 0.35);
-    --standout-badge-bg: #f5e6c8; --standout-badge-ink: #7a5b1e;
+    --cat-bg: #f0f0f0; --hl-near-bg: #eef6ee; --hl-near-border: #a9c9aa; --hl-mid-bg: #f2f3f4;
+    --hl-mid-border: #b7bcc0;
+    --standout-border: #c9ab6b; --standout-badge-bg: #f5ecd9; --standout-badge-ink: #7a5b1e;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --paper: #14181a; --ink: #e7e9ea; --ink-soft: #9aa3a8; --line: #2c3336; --link: #7fb0ff;
-      --cat-bg: #232a2d; --hl-near-bg: #1c2b1c; --hl-near-border: #4d7a4f; --hl-mid-bg: #262b2e;
-      --hl-mid-border: #7a8288; --hl-near-link: #8fd685; --hl-mid-link: #c3c9ce;
-      --standout-border: #b3903f; --standout-glow: rgba(179, 144, 63, 0.35);
-      --standout-badge-bg: #3a3220; --standout-badge-ink: #e0c080;
+      --cat-bg: #232a2d; --hl-near-bg: #182019; --hl-near-border: #3f5c40; --hl-mid-bg: #202427;
+      --hl-mid-border: #565b5f;
+      --standout-border: #8a734a; --standout-badge-bg: #332c1c; --standout-badge-ink: #e0c080;
     }
   }
   :root[data-theme="dark"] {
     --paper: #14181a; --ink: #e7e9ea; --ink-soft: #9aa3a8; --line: #2c3336; --link: #7fb0ff;
-    --cat-bg: #232a2d; --hl-near-bg: #1c2b1c; --hl-near-border: #4d7a4f; --hl-mid-bg: #262b2e;
-    --hl-mid-border: #7a8288; --hl-near-link: #8fd685; --hl-mid-link: #c3c9ce;
-    --standout-border: #b3903f; --standout-glow: rgba(179, 144, 63, 0.35);
-    --standout-badge-bg: #3a3220; --standout-badge-ink: #e0c080;
+    --cat-bg: #232a2d; --hl-near-bg: #182019; --hl-near-border: #3f5c40; --hl-mid-bg: #202427;
+    --hl-mid-border: #565b5f;
+    --standout-border: #8a734a; --standout-badge-bg: #332c1c; --standout-badge-ink: #e0c080;
   }
   :root[data-theme="light"] {
     --paper: #ffffff; --ink: #1a1a1a; --ink-soft: #666666; --line: #dddddd; --link: #0645ad;
-    --cat-bg: #f0f0f0; --hl-near-bg: #dfeee0; --hl-near-border: #7aab7c; --hl-mid-bg: #eceff1;
-    --hl-mid-border: #9aa0a6; --hl-near-link: #3f7a45; --hl-mid-link: #52585e;
-    --standout-border: #c99a3f; --standout-glow: rgba(201, 154, 63, 0.35);
-    --standout-badge-bg: #f5e6c8; --standout-badge-ink: #7a5b1e;
+    --cat-bg: #f0f0f0; --hl-near-bg: #eef6ee; --hl-near-border: #a9c9aa; --hl-mid-bg: #f2f3f4;
+    --hl-mid-border: #b7bcc0;
+    --standout-border: #c9ab6b; --standout-badge-bg: #f5ecd9; --standout-badge-ink: #7a5b1e;
   }
   body { font-family: -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 16px; color: var(--ink); background: var(--paper); }
   h1 { font-size: 1.4rem; }
@@ -44,9 +40,7 @@
   .desc { color: var(--ink); opacity: 0.85; font-size: 0.85rem; margin-top: 4px; }
   .cat { display: inline-block; background: var(--cat-bg); border-radius: 4px; padding: 1px 6px; font-size: 0.75rem; margin-right: 4px; }
   .hl-near { background: var(--hl-near-bg); }
-  .hl-near a { color: var(--hl-near-link); }
   .hl-mid { background: var(--hl-mid-bg); }
-  .hl-mid a { color: var(--hl-mid-link); }
   .badge-standout { display: inline-block; background: var(--standout-badge-bg); color: var(--standout-badge-ink); font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 999px; margin-top: 3px; }
   .legend-row { display: flex; flex-wrap: wrap; gap: 28px; margin: 16px 0 14px; }
   .legend { display: flex; flex-direction: column; gap: 6px; }
@@ -62,8 +56,8 @@
   <div class="legend">
     <div class="legend-label">Distance</div>
     <div class="legend-items">
-      <div><span style="background: #dfeee0; border: 1px solid #7aab7c;"></span>Within 3 km</div>
-      <div><span style="background: #eceff1; border: 1px solid #9aa0a6;"></span>Within 8 km</div>
+      <div><span style="background: #eef6ee; border: 1px solid #a9c9aa;"></span>Within 3 km</div>
+      <div><span style="background: #f2f3f4; border: 1px solid #b7bcc0;"></span>Within 8 km</div>
       <div><span style="background: none; border: 1px solid var(--line);"></span>Farther</div>
     </div>
   </div>
@@ -585,7 +579,7 @@
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/claude-code-workshop-sf-aug-11" target="_blank">✨ Claude Code Workshop - San Francisco</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Aug 11 · 1:00 PM · Embarcadero, San Francisco, CA · 2.8 km away <span class="cat">ai</span></div>
@@ -593,7 +587,7 @@
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/claude-coworkshop-sf-aug-11" target="_blank">✨ Claude Coworkshop - San Francisco</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Aug 11 · 1:00 PM · Embarcadero, San Francisco, CA · 3.0 km away <span class="cat">ai</span></div>
@@ -1817,7 +1811,7 @@
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/gjo9ws1t" target="_blank">✨ Humanoid Sound Bath</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Aug 15 · 11:00 AM · Mission District, San Francisco, CA · 1.0 km away <span class="cat">ai</span></div>
@@ -2010,7 +2004,7 @@
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/openro-y6oq" target="_blank">✨ Best Move Club: Chess Community Event Series</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Aug 12 · 5:30 PM · Union Square, San Francisco, CA · 1.8 km away <span class="cat">ai</span></div>
@@ -2950,7 +2944,7 @@
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/8lez4n99" target="_blank">✨ Agents you Love 2: Hackathon</a>
       <span class="badge-standout">🔥 287+ going</span>
       <div class="meta">Tue, Jul 28 · 10:00 AM · Mid-Market, San Francisco, CA · 1.6 km away <span class="cat">ai</span></div>
@@ -3321,7 +3315,7 @@
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/sgs5pubk" target="_blank">✨ Circle × Pantera: The Agentic Economy</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Jul 28 · 5:30 PM · Stanford, CA · 43.2 km away <span class="cat">ai</span></div>
@@ -3852,7 +3846,7 @@
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/posthog-sus26" target="_blank">✨ PostHog After Party @ Startup School &#x27;26 Day 1</a>
       <span class="badge-standout">🔥 423+ going</span>
       <div class="meta">Sat, Jul 25 · 6:00 PM · Dogpatch, San Francisco, CA · 1.6 km away <span class="cat">tech</span></div>
@@ -4288,7 +4282,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/JulyDynamoAfterHours" target="_blank">✨ Dynamo After Hours</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 6:00 PM · SoMa, San Francisco, CA · 0.3 km away <span class="cat">ai</span></div>
@@ -4296,7 +4290,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/m4ez9liu" target="_blank">✨ YC AI Startup School Afterparty</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Jul 25 · 6:00 PM · Showplace Square, San Francisco, CA · 0.5 km away <span class="cat">ai</span></div>
@@ -4344,7 +4338,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/wmw6rnmh" target="_blank">✨ Anything But Names: a Sonder × Lemma afterparty</a>
       <span class="badge-standout">🔥 259+ going</span>
       <div class="meta">Sat, Jul 25 · 6:00 PM · 349 9th St, San Francisco, CA 94103, USA · 0.7 km away <span class="cat">tech</span></div>
@@ -4352,7 +4346,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/nh67khl7" target="_blank">✨ A Dash Of: Salt &amp; Spice — Summer Fruit Tasting</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Jul 25 · 2:00 PM · Blu Dot, 99 Missouri St, San Francisco, CA 94107, USA · 0.8 km away <span class="cat">food</span></div>
@@ -4416,7 +4410,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/cazn88f7" target="_blank">✨ Can We Close the Sim2Real Gap?</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Jul 29 · 5:30 PM · Mission District, San Francisco, CA · 1.1 km away <span class="cat">ai</span></div>
@@ -4448,7 +4442,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/4yta9i2j" target="_blank">✨ IREN AI Social</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 5:00 PM · China Basin, San Francisco, CA · 1.1 km away <span class="cat">ai</span></div>
@@ -4576,7 +4570,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/9qz4l69s" target="_blank">✨ YC AI Startup School Infra Layer After-party</a>
       <span class="badge-standout">🔥 226+ going</span>
       <div class="meta">Sat, Jul 25 · 6:00 PM · Mission Rock, San Francisco, CA · 1.3 km away <span class="cat">ai</span></div>
@@ -4640,7 +4634,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/db3xynd2" target="_blank">✨ SF Creatives Night: Hard Launch x Osmo x a16z New Media</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 6:30 PM · Mission District, San Francisco, CA · 1.4 km away <span class="cat">tech</span></div>
@@ -4672,7 +4666,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/5lcn6pt8" target="_blank">✨ Pebblebed&#x27;s Builders Late Night Café</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Mon, Jul 27 · 7:30 PM · Mission District, San Francisco, California · 1.4 km away <span class="cat">tech</span></div>
@@ -4784,7 +4778,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/gkhrxqkw" target="_blank">✨ Up After Dark - TailscaleUp&#x27;s Official Afterparty</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Aug 26 · 7:00 PM · The Hibernia, 1 Jones St, San Francisco, CA 94102, USA · 1.4 km away <span class="cat">tech</span></div>
@@ -5096,7 +5090,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/7lhjec3b" target="_blank">✨ scrappy sessions</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Jul 28 · 5:30 PM · China Basin, San Francisco, CA · 1.6 km away <span class="cat">tech</span></div>
@@ -5232,7 +5226,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/Best-Work-Of-Your-Life" target="_blank">✨ Best Work Of Your Life</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 4:00 PM · 275 Brannan St, San Francisco, CA 94107, USA · 1.7 km away <span class="cat">ai</span></div>
@@ -5272,7 +5266,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/inflection002" target="_blank">✨ 🧬 Inflection #002 — Health: AI&#x27;s last problem w/ Omri Drory</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Aug 5 · 5:30 PM · 270 Brannan St, San Francisco, CA 94107, USA · 1.7 km away <span class="cat">ai</span></div>
@@ -5328,7 +5322,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/fondo_yc_startup_school_afterparty" target="_blank">✨ fondo yc startup school afterparty</a>
       <span class="badge-standout">🔥 245+ going</span>
       <div class="meta">Sun, Jul 26 · 6:00 PM · Mission District, San Francisco, CA · 1.7 km away <span class="cat">tech</span></div>
@@ -5352,7 +5346,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/bluedot-sf-launch" target="_blank">✨ BlueDot SF Launch</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 7:00 PM · Civic Center, San Francisco, CA · 1.8 km away <span class="cat">ai</span></div>
@@ -5448,7 +5442,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/newaesthetics" target="_blank">✨ new aesthetics</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Jul 25 · 6:00 PM · tiat, 151 Powell St, San Francisco, CA 94102, USA · 1.8 km away <span class="cat">tech</span></div>
@@ -5480,7 +5474,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/epistemologies" target="_blank">✨ the Epistemologies of Slop | Art + Tech Exhibition Closing Reception</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Jul 25 · 3:00 PM · tiat, 151 Powell St, San Francisco, CA 94102, USA · 1.8 km away <span class="cat">ai</span></div>
@@ -5544,7 +5538,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/xhogf93u" target="_blank">✨ Scalekit x Meetstream Agents in Production Build Day SF</a>
       <span class="badge-standout">🔥 209+ going</span>
       <div class="meta">Sat, Jul 25 · 9:45 AM · Rincon Hill, San Francisco, CA · 1.8 km away <span class="cat">ai</span></div>
@@ -5552,7 +5546,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/isyfjno2" target="_blank">✨ Physical AI and Robotics Meetup</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Jul 28 · 5:00 PM · Yerba Buena, San Francisco, CA · 1.8 km away <span class="cat">ai</span></div>
@@ -5696,7 +5690,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/bf1psict" target="_blank">✨ Summer Soiree with Entire</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Mon, Jul 27 · 7:00 PM · Mission District, San Francisco, CA · 1.9 km away <span class="cat">tech</span></div>
@@ -5744,7 +5738,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/iqs73qmu" target="_blank">✨ MCP V2 RELEASE EVENT</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Jul 28 · 5:30 PM · Yerba Buena, San Francisco, CA · 1.9 km away <span class="cat">ai</span></div>
@@ -5752,7 +5746,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/wcd1kx5o" target="_blank">✨ Low-Key Data Happy Hour - San Francisco</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Aug 18 · 6:00 PM · Hawthorn SF Nightclub and Lounge, 46 Geary St, San Francisco, CA 94108, USA · 1.9 km away <span class="cat">tech</span></div>
@@ -5760,7 +5754,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/x1to4ziz" target="_blank">✨ Privy Home: IRL SF</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Aug 5 · 11:00 AM · Dogpatch, San Francisco, CA · 1.9 km away <span class="cat">ai</span></div>
@@ -5768,7 +5762,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/8sf0hjs0" target="_blank">✨ Canadian YC Founders Showcase @ Startup School</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Jul 25 · 6:00 PM · SoMa, San Francisco, CA · 2.0 km away <span class="cat">tech</span></div>
@@ -5824,7 +5818,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/715ul99e" target="_blank">✨ Builder Night</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 5:30 PM · 660 Market St, San Francisco, CA 94104, USA · 2.0 km away <span class="cat">ai</span></div>
@@ -5864,7 +5858,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/on-mercury-sf" target="_blank">✨ on Mercury - SF</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Jul 29 · 9:00 AM · SOHN, 2535 3rd St, San Francisco, CA 94107, USA · 2.0 km away <span class="cat">tech</span></div>
@@ -5968,7 +5962,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/browse-l2aj" target="_blank">✨ Startup School Afterparty | by Vercel, Warp, Reducto, and Browserbase</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sun, Jul 26 · 6:00 PM · Union Square, San Francisco, CA · 2.1 km away <span class="cat">ai</span></div>
@@ -5976,7 +5970,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/modcon" target="_blank">✨ ModCon 2026</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Aug 18 · 7:30 AM · Grand Hyatt San Francisco, 345 Stockton St, San Francisco, CA 94108, USA · 2.1 km away <span class="cat">ai</span></div>
@@ -6040,7 +6034,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/chqmxhyg" target="_blank">✨ File Systems, Sandboxes, and the Irish Bank: YC @ Archil</a>
       <span class="badge-standout">🔥 250+ going</span>
       <div class="meta">Sat, Jul 25 · 6:00 PM · Union Square, San Francisco, CA · 2.1 km away <span class="cat">tech</span></div>
@@ -6064,7 +6058,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/i3evxecn" target="_blank">✨ Qualcomm x ZETIC x Liquid AI: Edge AI Builders Meetup</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 5:00 PM · Hanwha AI Center, 300 Grant Ave Ste 500, San Francisco, CA 94108, USA · 2.2 km away <span class="cat">ai</span></div>
@@ -6072,7 +6066,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/builtdifferent-auth0-stripe" target="_blank">✨ Built Different: Auth0 x Stripe Hackathon</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 12:00 PM · Okta, 100 1st St 6th floor, San Francisco, CA 94105, USA · 2.2 km away <span class="cat">tech</span></div>
@@ -6136,7 +6130,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/rhbtwo9u" target="_blank">✨ SF AI Code And Coffee Sunday July 26th!</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sun, Jul 26 · 2:00 PM · Salesforce Park, 425 Mission St, San Francisco, CA 94105, USA · 2.2 km away <span class="cat">ai</span></div>
@@ -6144,7 +6138,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/5w78yjyy" target="_blank">✨ Corgi Coffee Co-op: DIY Coffee for Founders</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Mon, Jul 27 · 11:00 AM · Corgi Cafe, 9 Claude Ln, San Francisco, CA 94108, USA · 2.2 km away <span class="cat">food</span><span class="cat">tech</span></div>
@@ -6248,7 +6242,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/x0mqtd1a" target="_blank">✨ Gray Area Cultural Incubator Showcase 2026</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Aug 5 · 7:00 PM · Gray Area / Grand Theater, 2665 Mission St, San Francisco, CA 94110, USA · 2.2 km away <span class="cat">ai</span></div>
@@ -6512,7 +6506,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/agent-night" target="_blank">✨ WorkOS Agent Night</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Aug 12 · 5:00 PM · The Regency Ballroom, 1300 Van Ness Ave, San Francisco, CA 94109, USA · 2.5 km away <span class="cat">ai</span></div>
@@ -6552,7 +6546,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/0pza6p4n" target="_blank">✨ August - How to Rule the World by Theo Baker</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sun, Aug 30 · 1:30 PM · Mission District, San Francisco, CA · 2.5 km away <span class="cat">tech</span></div>
@@ -6616,7 +6610,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/w61gmib2" target="_blank">✨ Intelligence in the Open — Edition 01: Reasoning, Evaluation &amp; Long-Horizon Agents</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Jul 28 · 6:00 PM · Financial District, San Francisco, CA · 2.6 km away <span class="cat">ai</span></div>
@@ -6624,7 +6618,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/4g3wb753" target="_blank">✨ Startup Reality 202: AI in Industries — From Foundation Models to Vertical Moats</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 5:30 PM · Financial District, San Francisco, CA · 2.6 km away <span class="cat">ai</span></div>
@@ -6640,7 +6634,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/xfbtidsx" target="_blank">✨ AI x Fashion Coffee Club</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Fri, Aug 7 · 8:00 AM · Le Marais Bakery, 498 Sanchez St, San Francisco, CA 94114, USA · 2.6 km away <span class="cat">ai</span></div>
@@ -6656,7 +6650,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/durable-ai-july" target="_blank">✨ Durable Multimodal AI Meetup with HeyGen, Vapi, and Modal</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Jul 28 · 5:30 PM · Financial District, San Francisco, CA · 2.6 km away <span class="cat">ai</span></div>
@@ -6672,7 +6666,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/yp4xhswa" target="_blank">✨ YC Startup School After Party</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sun, Jul 26 · 7:30 PM · Alamo Square, San Francisco, CA · 2.7 km away <span class="cat">tech</span></div>
@@ -6800,7 +6794,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/StepSF26" target="_blank">✨ Step SF 2026: The AI &amp; Tech Startup Festival</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Aug 27 · 9:00 AM · The Midway, 900 Marin St, San Francisco, CA 94124, USA · 2.8 km away <span class="cat">ai</span></div>
@@ -6808,7 +6802,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/cerebrassupernova26" target="_blank">✨ SUPERNOVA 2026</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Aug 18 · 2:00 PM · The Midway, 900 Marin St, San Francisco, CA 94124, USA · 2.8 km away <span class="cat">ai</span></div>
@@ -6936,7 +6930,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/clickh-z578" target="_blank">✨ San Francisco Data Engineering Meetup with ClickHouse</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Aug 11 · 5:30 PM · CANOPY Jackson Square, 595 Pacific Ave 4th floor, San Francisco, CA 94133, USA · 2.9 km away <span class="cat">tech</span></div>
@@ -6944,7 +6938,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-near standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/july-SF-Agents-APIs-meetup" target="_blank">✨ Agents &amp; APIs SF Developer Meetup</a>
       <span class="badge-standout">🔥 363+ going</span>
       <div class="meta">Thu, Jul 30 · 5:30 PM · CANOPY Jackson Square, 595 Pacific Ave 4th floor, San Francisco, CA 94133, USA · 2.9 km away <span class="cat">ai</span></div>
@@ -7016,7 +7010,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/7h2hjufc" target="_blank">✨ Scaling revenue at Stripe and Vercel with Jeanne DeWitt Grosser (COO, Vercel)</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 6:00 PM · Northern Waterfront, San Francisco, CA · 3.0 km away <span class="cat">ai</span></div>
@@ -7056,7 +7050,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/ExtraordinaryFoundersAug6" target="_blank">✨ Extraordinary Founders Dinner (hosted by Andrew Yeung)</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Aug 6 · 6:00 PM · Western Addition, San Francisco, CA · 3.1 km away <span class="cat">tech</span></div>
@@ -7088,7 +7082,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/b4y2veki" target="_blank">✨ Built on Baseten | AI Demo Night</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Aug 4 · 6:00 PM · Northern Waterfront, San Francisco, CA · 3.2 km away <span class="cat">ai</span></div>
@@ -7096,7 +7090,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/qzct3ybt" target="_blank">✨ AI Hackathon: Sales Copilot AI</a>
       <span class="badge-standout">🔥 249+ going</span>
       <div class="meta">Sat, Sep 5 · 11:00 AM · Northern Waterfront, San Francisco, California · 3.2 km away <span class="cat">ai</span></div>
@@ -7128,7 +7122,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/ir1t9z73" target="_blank">✨ Taste: A Physical AI Data Happy Hour</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 6:00 PM · Embarcadero, San Francisco, CA · 3.3 km away <span class="cat">ai</span></div>
@@ -7152,7 +7146,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/brxv4c7z" target="_blank">✨ 50Y Summer Party: Reflections</a>
       <span class="badge-standout">🔥 284+ going</span>
       <div class="meta">Fri, Aug 7 · 5:00 PM · Corona Heights, San Francisco, CA · 3.3 km away <span class="cat">tech</span></div>
@@ -7168,7 +7162,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/odhr2288" target="_blank">✨ 136th SF Hardware Meetup @ Studio 45 | Demo Night</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Aug 6 · 6:30 PM · Bernal Heights, San Francisco, CA · 3.3 km away <span class="cat">tech</span></div>
@@ -7224,7 +7218,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/ugfl1mn2" target="_blank">✨ MCP Graduation Party</a>
       <span class="badge-standout">🔥 318+ going</span>
       <div class="meta">Tue, Jul 28 · 6:00 PM · Union Street, San Francisco, CA · 3.9 km away <span class="cat">ai</span></div>
@@ -7256,7 +7250,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/mistral-summer-catfe-sf" target="_blank">✨ Mistral Catfe Coworking</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Aug 20 · 12:00 PM · Laurel Heights, San Francisco, CA · 4.3 km away <span class="cat">ai</span></div>
@@ -7320,7 +7314,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/9x1573sw" target="_blank">✨ JacHacks San Francisco</a>
       <span class="badge-standout">🔥 611+ going</span>
       <div class="meta">Sun, Jul 26 · 8:00 AM · Founders, Inc. | San Francisco Lab, 2 Marina Blvd B300, San Francisco, CA 94123, USA · 4.8 km away <span class="cat">ai</span></div>
@@ -7344,7 +7338,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/acquiredmeetup" target="_blank">✨ The Acquired Meetup</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Sep 17 · 5:00 PM · Fort Mason, San Francisco, CA · 5.0 km away <span class="cat">tech</span></div>
@@ -7360,7 +7354,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/ghnew59o" target="_blank">✨ Create for Good</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Aug 22 · 5:30 PM · Palace of Fine Arts Theatre, 3301 Lyon St, San Francisco, CA 94123, USA · 5.3 km away <span class="cat">ai</span></div>
@@ -7424,7 +7418,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event hl-mid standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/rklrsomo" target="_blank">✨ AI Valley x Pet Zen Dog-a-thon</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Aug 22 · 9:00 AM · Main Post, San Francisco, CA · 6.0 km away <span class="cat">ai</span></div>
@@ -7496,7 +7490,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/h5x0pzw9" target="_blank">✨ ☕️ OpenAI Codex Community Meetup-San Francisco #8</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 5:00 PM · Stonestown, San Francisco, CA · 8.1 km away <span class="cat">ai</span></div>
@@ -7656,7 +7650,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/g76q9q3m" target="_blank">✨ Hangtime: An Oakland Yard Wine Fair</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sun, Jul 26 · 1:00 PM · Oakland Yard Wine Shop, 420 40th St #2, Oakland, CA 94609, USA · 14.1 km away <span class="cat">food</span></div>
@@ -7752,7 +7746,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/agentic-ai-summit" target="_blank">✨ Agentic AI Summit</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sat, Aug 1 · 9:00 AM · Berkeley, CA · 16.7 km away <span class="cat">ai</span></div>
@@ -7976,7 +7970,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/jul-ai-forum" target="_blank">✨ Enterprise AI at Scale: Talks + AI Agent Workshops, Ft Google, Snowflake, Thoughtspot &amp; Datasaur</a>
       <span class="badge-standout">🔥 864+ going</span>
       <div class="meta">Tue, Jul 28 · 3:30 PM · 135 Constitution Dr, Menlo Park, CA 94025, USA · 37.5 km away <span class="cat">ai</span></div>
@@ -8032,7 +8026,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/ai-summit-2026" target="_blank">✨ TechEquity Ai Summit 2026: Talks + AI Agent Workshops</a>
       <span class="badge-standout">🔥 273+ going</span>
       <div class="meta">Tue, Nov 3 · 9:00 AM · 135 Constitution Dr, Menlo Park, CA 94025, USA · 37.5 km away <span class="cat">ai</span></div>
@@ -8040,7 +8034,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/ahp8g7dp" target="_blank">✨ Vibe Your SaaS: Startup Pitch Competition + VC/Founder Mixer @ Snowflake HQ</a>
       <span class="badge-standout">🔥 245+ going</span>
       <div class="meta">Thu, Sep 10 · 5:30 PM · Menlo Park, California · 37.7 km away <span class="cat">ai</span></div>
@@ -8296,7 +8290,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/basssbc2026" target="_blank">✨ BASS SBC 2026</a>
       <span class="badge-standout">🔥 1190+ going</span>
       <div class="meta">Thu, Jul 30 · 9:00 AM · Stanford, CA · 43.1 km away <span class="cat">ai</span></div>
@@ -8320,7 +8314,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/9hp5rxy8" target="_blank">✨ Bay Area Frontier Research Club #16 | AI x Bio Track Launch (dinner + paper discussion @ Stanford University)</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Wed, Aug 5 · 5:30 PM · Stanford, CA · 43.3 km away <span class="cat">ai</span></div>
@@ -8344,7 +8338,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/u8j9b0a6" target="_blank">✨ Robotics × Physical AI Founder-Investor Summit</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Sun, Jul 26 · 1:00 PM · Stanford, CA · 43.5 km away <span class="cat">ai</span></div>
@@ -8360,7 +8354,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/uxf409wl" target="_blank">✨ Physical AI over Coffee - Palo Alto</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Tue, Jul 28 · 6:00 PM · The Treehouse, 459 Lagunita Dr, Stanford, CA 94305, USA · 43.6 km away <span class="cat">ai</span></div>
@@ -8400,7 +8394,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/angellaunchaugust3" target="_blank">✨ Silicon Valley AI/Tech Investing Summit---Attend or Pitch</a>
       <span class="badge-standout">🔥 247+ going</span>
       <div class="meta">Mon, Aug 3 · 2:00 PM · 2490 Middlefield Rd, Palo Alto, CA 94301, USA · 44.3 km away <span class="cat">ai</span></div>
@@ -8456,7 +8450,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/Palo-Alto-July" target="_blank">✨ Palo Alto, CA - Deep Tech Connections Networking Breakfast</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Fri, Jul 31 · 8:30 AM · Palo Alto, California · 44.9 km away <span class="cat">tech</span></div>
@@ -8928,7 +8922,7 @@ Exhibition</a>
     </div>
     
 
-    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 6px; box-shadow: 0 0 0 3px var(--standout-glow);">
+    <div class="event standout" style="border-left-color: var(--standout-border); border-left-width: 5px;">
       <a href="https://lu.ma/kn6j9xyj" target="_blank">✨ South Bay Systems: July Coffee Chat</a>
       <span class="badge-standout">★ Featured</span>
       <div class="meta">Thu, Jul 30 · 5:00 PM · Plaza del Sol, 200 W Evelyn Ave, Sunnyvale, CA 94086, USA · 54.6 km away <span class="cat">tech</span></div>
