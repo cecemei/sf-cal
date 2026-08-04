@@ -82,12 +82,14 @@
   .legend-items .chip.active { background: var(--cat-bg); color: var(--ink); font-weight: 600; }
   .event.hidden-by-filter { display: none; }
   .scroll-hint { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 12px; }
-  .week-grid, .top-scroll { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
-  .week-grid { padding-bottom: 8px; }
-  .week-grid::-webkit-scrollbar, .top-scroll::-webkit-scrollbar { height: 8px; }
-  .week-grid::-webkit-scrollbar-track, .top-scroll::-webkit-scrollbar-track { background: transparent; }
-  .week-grid::-webkit-scrollbar-thumb, .top-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
-  .top-scroll { overflow-x: auto; overflow-y: hidden; height: 14px; margin-bottom: 6px; }
+  .week-grid { scrollbar-width: thin; scrollbar-color: var(--line) transparent; padding-bottom: 8px; }
+  .week-grid::-webkit-scrollbar { height: 8px; }
+  .week-grid::-webkit-scrollbar-track { background: transparent; }
+  .week-grid::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+  .top-scroll { overflow-x: auto; overflow-y: hidden; height: 10px; margin-bottom: 10px; border-radius: 999px; background: var(--cat-bg); scrollbar-width: thin; scrollbar-color: var(--link) transparent; }
+  .top-scroll::-webkit-scrollbar { height: 10px; }
+  .top-scroll::-webkit-scrollbar-track { background: transparent; border-radius: 999px; }
+  .top-scroll::-webkit-scrollbar-thumb { background: var(--link); border-radius: 999px; border: 2px solid var(--cat-bg); }
   .top-scroll-inner { height: 1px; }
 </style>
 </head>
@@ -97,7 +99,7 @@
   <div class="legend">
     <div class="legend-label">Distance — click to show only</div>
     <div class="legend-items">
-      <div class="chip" data-distance="near"><span style="background: #c9e0f5; border: 1px solid #5f92c0;"></span>Within 3 km</div>
+      <div class="chip" data-distance="near"><span style="background: #c9e0f5; border: 1px solid #5f92c0;"></span>Within 2 km</div>
       <div class="chip" data-distance="mid"><span style="background: #eef4fa; border: 1px solid #b9cfe3;"></span>Within 8 km</div>
       <div class="chip" data-distance="far"><span style="background: none; border: 1px solid var(--line);"></span>Farther (quieter card)</div>
     </div>
@@ -133,7 +135,7 @@
       <div class="desc">✨ What — Health Alliance - Intro, Network, Partner, Innovate 📍 Where — Palo Alto (sign to see location) 🚗 Carpool — w/ Crewz 📬 Repost — on LinkedIn/Social or relevant channels (prev post ) 🤝🏻 Sponsors / Partners are welcomed 🏟️ Venue —…</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/22tpqm4s" target="_blank">✨ 9Zero x Vectors Capital Community Lunch &amp; Learn: Data Center Series - China vs U.S.</a>
       <div class="meta">12:00–1:30 PM · 9Zero Climate Innovation Hub, 350 California St 4th floor, San Francisco, CA 94104, USA · 2.6 km <span class="cat">ai</span></div>
       <div class="desc">Join Vectors Capital and 9Zero for a casual Lunch &amp; Learn on the data center infrastructure landscape in China and the U.S.</div>
@@ -163,7 +165,7 @@
       <div class="desc">Join us for an exclusive, invitation-only MIT Media Lab event exploring the frontiers of AI agents and the agentic web.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/m6gib2iu" target="_blank">✨ Women&#x27;s Founder Night</a>
       <div class="meta">6:00–8:00 PM · Corgi Cafe, 9 Claude Ln, San Francisco, CA 94108, USA · 2.2 km <span class="cat">tech</span></div>
       <div class="desc">You&#x27;re building something the world hasn&#x27;t seen yet.</div>
@@ -199,7 +201,7 @@
       <div class="desc">☕️📝 Paper Link 📝☕️ https://arxiv.org/abs/2601.20802 Can an LLM turn feedback on why it failed into its own dense training signal—and beat standard RLVR without a teacher or reward model?</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/ft6j7nb9" target="_blank">✨ Scrappy AI Founders Play Soccer</a>
       <div class="meta">7:30–10:00 PM · Financial District, San Francisco, CA · 2.1 km <span class="cat">tech</span></div>
       <div class="desc">12 Scrappy Founders - outdoor endurance community for founders and investors the Bay Area.</div>
@@ -217,13 +219,13 @@
       <div class="desc">We&#x27;re gathering a small group of devtool founders to talk about personal brand, GTM tactics, tech marketing This is a small, founder/builder-only gathering in SF.</div>
     </div>
     
-    <div class="event hl-near" data-band="morning" data-distance="near" style="border-color: #6f95b3;">
+    <div class="event hl-mid" data-band="morning" data-distance="mid" style="border-color: #6f95b3;">
       <a href="https://lu.ma/pitch-and-lunch" target="_blank">✨ Early Stage Pitch and Lunch</a>
       <div class="meta">11:30–1:30 PM · Lower Nob Hill, San Francisco, CA · 2.0 km <span class="cat">tech</span></div>
       <div class="desc">Early stage (preseed and seed) founders pitch early stage investors in person at the Marines Memorial Club</div>
     </div>
     
-    <div class="event hl-near" data-band="morning" data-distance="near" style="border-color: #6f95b3;">
+    <div class="event hl-mid" data-band="morning" data-distance="mid" style="border-color: #6f95b3;">
       <a href="https://lu.ma/july-pitch-and-lunch" target="_blank">✨ Early Stage Pitch and Lunch</a>
       <div class="meta">11:30–1:30 PM · Lower Nob Hill, San Francisco, CA · 2.2 km <span class="cat">tech</span></div>
       <div class="desc">Early stage (preseed and seed) founders pitch early stage investors in person at the Marines Memorial Club</div>
@@ -235,7 +237,7 @@
       <div class="desc">Join Genia Verovskaya for an informative seminar highlighting Thermo Fisher Scientific&#x27;s latest functional screening solutions for genomics and gene therapy research.</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/the-221l" target="_blank">✨ investor demo day</a>
       <div class="meta">3:30–5:30 PM · Embarcadero, San Francisco, CA · 2.9 km <span class="cat">tech</span></div>
       <div class="desc">for investors only.</div>
@@ -253,7 +255,7 @@
       <div class="desc">Pregame for Outside Lands with a yoga flow playlist comprised entirely of this year’s OSL artists!</div>
     </div>
     
-    <div class="event hl-near standout" data-band="evening" data-distance="near" style="border-color: var(--standout-border); border-width: 2px;">
+    <div class="event hl-mid standout" data-band="evening" data-distance="mid" style="border-color: var(--standout-border); border-width: 2px;">
       <a href="https://lu.ma/90aps3fj" target="_blank">✨ Founders Meetup - San Francisco<span class="badge-standout">🔥 264+ going</span></a>
       <div class="meta">5:00–6:00 PM · WeWork Office Space &amp; Coworking, 415 Mission St, San Francisco, CA 94105, USA · 2.2 km <span class="cat">tech</span></div>
       <div class="desc">A meetup for founders, builders, and startup enthusiasts to connect, exchange ideas, and discuss the journey of building companies.</div>
@@ -361,13 +363,13 @@
       <div class="desc">🤖 Join us for our ongoing AI Series!</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/rgvg3cjw" target="_blank">✨ Drinks &amp; Dinner with Yape + Credicorp</a>
       <div class="meta">7:30–10:00 PM · Embarcadero, San Francisco, CA · 2.9 km <span class="cat">tech</span></div>
       <div class="desc">El equipo de Yape y Credicorp estará de visita en San Francisco y queremos aprovechar la oportunidad para reunir a founders y personas del ecosistema para una conversación abierta sobre construir productos, startups y tecnología.</div>
     </div>
     </div></div><div class="day-col" style="flex: 4 0 790px; min-width: 790px;"><div class="day-header">Wed, Aug 5 <span class="count">(41)</span></div><div class="event-list" style="column-count: 4;">
-    <div class="event hl-near" data-band="morning" data-distance="near" style="border-color: #6f95b3;">
+    <div class="event hl-mid" data-band="morning" data-distance="mid" style="border-color: #6f95b3;">
       <a href="https://lu.ma/9c3mtnvj" target="_blank">✨ Agents &amp; Bagels: Weekly breakfast meet up for agent builders</a>
       <div class="meta">8:00–9:00 AM · Mission Provisions, 555 Mission St, San Francisco, CA 94024, USA · 2.0 km <span class="cat">ai</span></div>
       <div class="desc">The &quot;AI as a feature&quot; phase is over.</div>
@@ -397,7 +399,7 @@
       <div class="desc">City College of San Francisco&#x27;s MESA program and the Bay Area Ocean Cluster cordially invites you to an intimate gathering of technical presentations and food.</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/vv63s2ze" target="_blank">✨ The RelaXi Curator Lab 001: How We Relax Through Time</a>
       <div class="meta">2:00–4:00 PM · Mechanics&#x27; Institute, 57 Post St, San Francisco, CA 94104, USA · 2.0 km <span class="cat">tech</span></div>
       <div class="desc">Welcome to The RelaXi Curator Lab, a private preview for creators and thinkers shaping a new way to relax.</div>
@@ -433,7 +435,7 @@
       <div class="desc">The Founder Showcase: A Curated Presentation of Global Innovation from Korea You are invited to an exclusive preview of tomorrow&#x27;s AI Companies.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/3kskgurw" target="_blank">✨ Software Design &amp; Philosophy Club - Meetup #3</a>
       <div class="meta">5:00–7:00 PM · Financial District, San Francisco, CA · 2.2 km <span class="cat">ai</span></div>
       <div class="desc">Meetup Topic #1: Balancing the tradeoff between managing application code and LLM-powered Spec Driven Development Meetup Topic #2: How culture and language shape software architecture</div>
@@ -541,7 +543,7 @@
       <div class="desc">Wild AI SF #1: Hidden Infrastructure of Intelligence AI products feel magical on the surface, but underneath them is a vast hidden stack: model infrastructure, data pipelines, inference systems, compression, compilers, evals, agents,…</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/amli74w8" target="_blank">✨ AI 101 Series: Vibe Code to Live: Ship a Real Product with AI, No Technical Skills Required</a>
       <div class="meta">6:00–7:30 PM · Shack15, 1, Ferry Building, Ste 201, San Francisco, CA 94111, USA · 3.0 km <span class="cat">ai</span></div>
       <div class="desc">A live 90-minute training where you take an idea, build it with AI, and deploy it to a live URL you can share with anyone, all in one session.</div>
@@ -571,7 +573,7 @@
       <div class="desc">​Come hang out with your fellow YC founders on the first Wednesday of every month!</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/9h0c6wgu" target="_blank">✨ AI Founder &amp; Builder Poker Night | .local Build Fest Week</a>
       <div class="meta">6:30–10:30 PM · Financial District, San Francisco, CA · 2.4 km <span class="cat">ai</span></div>
       <div class="desc">In anticipation of MongoDB .local Build Fest on August 13th, we’re bringing builders together for an exclusive poker night for technical founders, senior engineers, and startup operators.</div>
@@ -601,7 +603,7 @@
       <div class="desc">🚀 Join our event in San Francisco!</div>
     </div>
     
-    <div class="event hl-near standout" data-band="evening" data-distance="near" style="border-color: var(--standout-border); border-width: 2px;">
+    <div class="event hl-mid standout" data-band="evening" data-distance="mid" style="border-color: var(--standout-border); border-width: 2px;">
       <a href="https://lu.ma/x0mqtd1a" target="_blank">✨ Gray Area Cultural Incubator Showcase 2026<span class="badge-standout">★ Featured</span></a>
       <div class="meta">7:00–9:00 PM · Gray Area / Grand Theater, 2665 Mission St, San Francisco, CA 94110, USA · 2.2 km <span class="cat">ai</span></div>
       <div class="desc">From custom-trained models to artist-built platforms, the Gray Area 2026 Cultural Incubator Showcase opens the studio door to the next generation of creative technologists.</div>
@@ -625,7 +627,7 @@
       <div class="desc">Agent Builders Breakfast - Founders &amp; Builders in SOMA, SF Kick off your morning with conversations and impromptu demos with others navigating the chaos of building AI Agents inside of tech companies.</div>
     </div>
     
-    <div class="event hl-near" data-band="morning" data-distance="near" style="border-color: #6f95b3;">
+    <div class="event hl-mid" data-band="morning" data-distance="mid" style="border-color: #6f95b3;">
       <a href="https://lu.ma/scale-c20e" target="_blank">✨ Pre-OSL Coworking Popup 〰️ Scale Venture Partners</a>
       <div class="meta">9:00–6:00 PM · Wave, 663 Haight St, San Francisco, CA 94117, USA · 2.6 km <span class="cat">tech</span></div>
       <div class="desc">The OSL lineup is great, but is the lineup of your week before as good?</div>
@@ -655,7 +657,7 @@
       <div class="desc">Join us for an afternoon where Silicon VCs &amp; founders come together to connect beyond the boardroom.</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/growth-e6yc" target="_blank">✨ Growth Factory Ventures 2026 AGM-San Francisco</a>
       <div class="meta">3:00–5:00 PM · Financial District, San Francisco, CA · 2.8 km <span class="cat">ai</span></div>
       <div class="desc">Venture is being re-engineered.</div>
@@ -673,7 +675,7 @@
       <div class="desc">Come hang with the community and see what people are building, exploring, and bringing to life.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/m668kijy" target="_blank">✨ How to do a Viral Launch</a>
       <div class="meta">5:00–7:00 PM · SoMa, San Francisco, CA · 2.0 km <span class="cat">tech</span></div>
       <div class="desc">A viral launch looks like luck.</div>
@@ -739,19 +741,19 @@
       <div class="desc">Welcome to the AI meetup in Silicon Valley.</div>
     </div>
     
-    <div class="event hl-near standout" data-band="evening" data-distance="near" style="border-color: var(--standout-border); border-width: 2px;">
+    <div class="event hl-mid standout" data-band="evening" data-distance="mid" style="border-color: var(--standout-border); border-width: 2px;">
       <a href="https://lu.ma/o0id5abn" target="_blank">✨ AlphaSignal&#x27;s Pizza Agent Challenge ($2,500 Cash Prize)<span class="badge-standout">★ Featured</span></a>
       <div class="meta">5:30–9:00 PM · Financial District, San Francisco, CA · 2.6 km <span class="cat">ai</span></div>
       <div class="desc">🍕 The mission: build an AI agent that orders a pizza.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/artgallery3" target="_blank">✨ Art Gallery for Agents (Portal x3)</a>
       <div class="meta">5:30–8:30 PM · SoMa, San Francisco, CA · 2.1 km <span class="cat">ai</span></div>
       <div class="desc">Note: Registration is required and subject to approval.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/7g7wck7w" target="_blank">✨ ModelOps Night: Evals, Routing &amp; Benchmarks</a>
       <div class="meta">5:30–8:00 PM · Werqwise, 465 California St 7th floor, San Francisco, CA 94104, USA · 2.5 km <span class="cat">ai</span></div>
       <div class="desc">A technical deep dive on evaluating AI products, agents, and workflows against real-world tasks.</div>
@@ -769,7 +771,7 @@
       <div class="desc">AI has changed what’s easy in protein engineering.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/growth-guzg" target="_blank">✨ RIP Pitch Deck Party-San Francisco</a>
       <div class="meta">5:30–7:30 PM · Financial District, San Francisco, CA · 2.4 km <span class="cat">ai</span></div>
       <div class="desc">The deck is dead.</div>
@@ -781,7 +783,7 @@
       <div class="desc">AGENDA 6:00–6:30 PM — Arrival &amp; Welcome Drinks 6:30–7:30 PM — Food + Friendly faces 7:30–8:30PM — Closing ABOUT Join a select group of IT and SecOps leaders in SF for an evening of industry conversation, great food, and networking,…</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/enrich-p34q" target="_blank">✨ Angel &amp; LP Investing 101</a>
       <div class="meta">6:00–8:00 PM · Union Square, San Francisco, CA · 2.4 km <span class="cat">tech</span></div>
       <div class="desc">Many senior technology leaders are curious about angel investing, but few know where to begin.</div>
@@ -793,13 +795,13 @@
       <div class="desc">Join the CMU Tech &amp; Entrepreneurship community for a casual summer gathering in the Bay Area.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/baselayer-zaav" target="_blank">✨ Bridging the Agentic Era: The Future of Commerce Cocktail Hour</a>
       <div class="meta">6:00–9:00 PM · Rincon Hill, San Francisco, CA · 2.3 km <span class="cat">ai</span></div>
       <div class="desc">Join Baselayer and an exclusive group of top fintech and commerce leaders for an intimate evening on the water.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/odscai-imyl" target="_blank">✨ Build an AI Agent in &lt;60 Min | SF</a>
       <div class="meta">6:00–8:00 PM · Mindspace Coworking San Francisco, 575 Market St, San Francisco, CA 94105, USA · 2.1 km <span class="cat">ai</span></div>
       <div class="desc">Build a Production-Ready AI Agent with CoCo in &lt;60 Minutes ❄️ Organized by ODSC AI in partnership with Snowflake General AI coding tools weren&#x27;t built for data teams.</div>
@@ -847,7 +849,7 @@
       <div class="desc">The way software gets built is splitting in two: humans who write code, and humans who run factories of agents that write code.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://partiful.com/e/auqcZaVtyp9OgtdJLL6r" target="_blank">🎉 First Thursday - Meetup</a>
       <div class="meta">6:00 PM · 425 Mission St, San Francisco, CA 94105 · 2.2 km <span class="cat">partiful</span></div>
       <div class="desc">Join us for a community meetup in the heart of downtown!</div>
@@ -895,7 +897,7 @@
       <div class="desc">Presented in conjunction with Jiabao Li’s solo exhibition Womb Wetware , this panel brings together Lauren Lee McCarthy, Sputniko!, Yoon Chung Han, and Jiabao Li.</div>
     </div>
     </div></div><div class="day-col" style="flex: 3 0 590px; min-width: 590px;"><div class="day-header">Fri, Aug 7 <span class="count">(30)</span></div><div class="event-list" style="column-count: 3;">
-    <div class="event hl-near standout" data-band="morning" data-distance="near" style="border-color: var(--standout-border); border-width: 2px;">
+    <div class="event hl-mid standout" data-band="morning" data-distance="mid" style="border-color: var(--standout-border); border-width: 2px;">
       <a href="https://lu.ma/xfbtidsx" target="_blank">✨ AI x Fashion Coffee Club<span class="badge-standout">★ Featured</span></a>
       <div class="meta">8:00–9:30 AM · Le Marais Bakery, 498 Sanchez St, San Francisco, CA 94114, USA · 2.6 km <span class="cat">ai</span></div>
       <div class="desc">An intimate and thoughtfully curated coffee gathering for people fascinated by the intersection of AI and fashion.</div>
@@ -979,7 +981,7 @@
       <div class="desc">INVESTORS YACHT CRUISE Connect.</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/tgo1mbqp" target="_blank">✨ Founders Gatherings</a>
       <div class="meta">4:00–6:00 PM · SoMa, San Francisco, CA · 2.3 km <span class="cat">tech</span></div>
       <div class="desc">Presented By Kyosuke Togami · Co-hosted by MindPal About Kyosuke Kyosuke Togami is a community builder and consultant at Transpose Platform, an early-stage VC firm based in New York.</div>
@@ -1015,7 +1017,7 @@
       <div class="desc">Six weeks ago, we selected 200 college students, recent grads and dropouts to go all in on their summer.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/ssepa2tj" target="_blank">✨ Reflection Happy Hour | Career Camp Bay Area</a>
       <div class="meta">5:00–7:00 PM · SoMa, San Francisco, CA · 2.1 km <span class="cat">tech</span></div>
       <div class="desc">Join us for an evening that&#x27;s one part reflection, one part celebration, and two parts good drinks with great folks!</div>
@@ -1045,7 +1047,7 @@
       <div class="desc">The Agora Series An interdisciplinary salon at Apollo Innovation Commons In ancient Athens, the agora was never only a marketplace.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://lu.ma/q8521f3k" target="_blank">✨ “Automation for the people, by the people” Kick off event</a>
       <div class="meta">6:00–8:00 PM · Lower Haight, San Francisco, California · 2.1 km <span class="cat">tech</span></div>
       <div class="desc">Automation for the people, by the people: kick off event!</div>
@@ -1069,13 +1071,13 @@
       <div class="desc">Standard ticket price is $3000, but free for our valued VIPs.</div>
     </div>
     
-    <div class="event hl-near" data-band="evening" data-distance="near" style="border-color: #8f6f9e;">
+    <div class="event hl-mid" data-band="evening" data-distance="mid" style="border-color: #8f6f9e;">
       <a href="https://partiful.com/e/nQI46AW74FyQvsPBIFt2" target="_blank">🎉 CLUV VIVA:  Amelie Takeover</a>
       <div class="meta">7:00 PM · 1754 Polk St, San Francisco, CA 94109 · 2.6 km <span class="cat">partiful</span></div>
       <div class="desc">Hey Friends, Do you like wine?</div>
     </div>
     </div></div><div class="day-col" style="flex: 2 0 390px; min-width: 390px;"><div class="day-header">Sat, Aug 8 <span class="count">(23)</span></div><div class="event-list" style="column-count: 2;">
-    <div class="event hl-near" data-band="morning" data-distance="near" style="border-color: #6f95b3;">
+    <div class="event hl-mid" data-band="morning" data-distance="mid" style="border-color: #6f95b3;">
       <a href="https://lu.ma/qvgjgdrh" target="_blank">✨ Builders who Run SF — 5K</a>
       <div class="meta">9:00–10:00 AM · Embarcadero, San Francisco, California · 2.9 km <span class="cat">tech</span></div>
       <div class="desc">Builders who Run is an informal and international running club.</div>
@@ -1153,25 +1155,25 @@
       <div class="desc">Get ready for a beautiful day in Golden Gate Park where you get rid of all those old clothes that you don&#x27;t wear that someone will wear every day.</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://partiful.com/e/LOUA6SofdFdLIx3jHzGk" target="_blank">🎉 AfroPole x Jossy’s Pole Parties &lt;3</a>
       <div class="meta">2:00–5:00 PM · 566 Dolores St, San Francisco, CA 94110 · 2.6 km <span class="cat">partiful</span></div>
       <div class="desc">Join us for AFROPOLE x JOSSY’S POLE PARTIES💋✨ A pop-up pole dance experience centering movement, confidence, sensuality, and melanated joy.</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/msf5yzmh" target="_blank">✨ Accountable AI: Governing Autonomous Agents in Production</a>
       <div class="meta">3:00–7:00 PM · Tesla San Francisco - Van Ness, 999 Van Ness Ave, San Francisco, CA 94109, USA · 2.2 km <span class="cat">ai</span></div>
       <div class="desc">As AI agents move from demos to production, a new question emerges: who&#x27;s accountable when an autonomous system takes action?</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/o9g1lrnm" target="_blank">✨ Japanese in Tech Picnic @ SF</a>
       <div class="meta">3:30–6:30 PM · Mission Dolores, San Francisco, CA · 2.3 km <span class="cat">tech</span></div>
       <div class="desc">SF / Bay AreaでTech業界に携わる20〜30代の日本人のみなさんが気軽につながれる機会を作れたらと思い、ピクニックを開催します！☀️ このイベントは Y&amp;Y Journey が主催します。 About Y&amp;Y Journey Y&amp;Y…</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/e1oyglqq" target="_blank">✨ Beginners Claude Code for Women Workshop 3: Automate Your Life</a>
       <div class="meta">3:30–6:30 PM · Yes SF Headquarters, 220 Montgomery St, San Francisco, CA 94104, USA · 2.3 km <span class="cat">ai</span></div>
       <div class="desc">Workshop 3 of the Beginner Cod Code Workshop Series.</div>
@@ -1255,7 +1257,7 @@
       <div class="desc">🤖🍨 Grab a sundae and join Sundae Robotics, a private, invite-only Sunday series bringing together robotics researchers, founders, and builders working at the frontier of physical intelligence.</div>
     </div>
     
-    <div class="event hl-near" data-band="afternoon" data-distance="near" style="border-color: #c49a55;">
+    <div class="event hl-mid" data-band="afternoon" data-distance="mid" style="border-color: #c49a55;">
       <a href="https://lu.ma/h71bv972" target="_blank">✨ Dinner Salon: AI as a Companion in Parenting</a>
       <div class="meta">4:00–6:00 PM · Nob Hill, San Francisco, CA · 2.9 km <span class="cat">ai</span></div>
       <div class="desc">Join us for an evening of drinks and discussion as we host our first Moms who AI Dinner Salon!</div>
