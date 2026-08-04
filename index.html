@@ -49,7 +49,7 @@
     --hl-mid-bg: #eef4fa; --hl-mid-border: #b9cfe3;
     --standout-border: #c9ab6b; --standout-badge-bg: #f5ecd9; --standout-badge-ink: #7a5b1e;
   }
-  body { font-family: ui-rounded, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; max-width: 1500px; margin: 16px auto; padding: 0 10px; color: var(--ink); background: var(--paper); }
+  body { font-family: ui-rounded, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; margin: 16px 0; padding: 0 10px; color: var(--ink); background: var(--paper); }
   h1 { font-size: 1.4rem; }
   .week-grid { display: flex; gap: 10px; overflow-x: auto; align-items: flex-start; }
   .day-col { flex: 1 0 190px; min-width: 190px; }
@@ -86,11 +86,10 @@
   .week-grid::-webkit-scrollbar { height: 8px; }
   .week-grid::-webkit-scrollbar-track { background: transparent; }
   .week-grid::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
-  .top-scroll { overflow-x: auto; overflow-y: hidden; height: 10px; margin-bottom: 10px; border-radius: 999px; background: var(--cat-bg); scrollbar-width: thin; scrollbar-color: var(--link) transparent; }
-  .top-scroll::-webkit-scrollbar { height: 10px; }
-  .top-scroll::-webkit-scrollbar-track { background: transparent; border-radius: 999px; }
-  .top-scroll::-webkit-scrollbar-thumb { background: var(--link); border-radius: 999px; border: 2px solid var(--cat-bg); }
-  .top-scroll-inner { height: 1px; }
+  .top-scroll { position: relative; height: 10px; margin-bottom: 12px; border-radius: 999px; background: var(--cat-bg); cursor: pointer; }
+  .top-scroll-thumb { position: absolute; top: 0; left: 0; height: 100%; min-width: 30px; border-radius: 999px; background: var(--link); cursor: grab; }
+  .top-scroll-thumb:hover { background: var(--ink-soft); }
+  .top-scroll-thumb.dragging { cursor: grabbing; background: var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -121,7 +120,7 @@
   </div>
 </div>
 <div class="scroll-hint">Scroll sideways for more days →</div>
-<div class="top-scroll"><div class="top-scroll-inner"></div></div>
+<div class="top-scroll"><div class="top-scroll-thumb"></div></div>
 <div class="week-grid"><div class="day-col" style="flex: 2 0 390px; min-width: 390px;"><div class="day-header">Mon, Aug 3 <span class="count">(15)</span></div><div class="event-list" style="column-count: 2;">
     <div class="event hl-mid standout" data-band="morning" data-distance="mid" style="border-color: var(--standout-border); border-width: 2px;">
       <a href="https://lu.ma/beyond-yh96" target="_blank">✨ A Morning Walk: When AI Agents Touch Money<span class="badge-standout">★ Featured</span></a>
@@ -1283,12 +1282,62 @@
     </div></div></div>
 <script>
   (function () {
-    var topScroll = document.querySelector('.top-scroll');
-    var topScrollInner = document.querySelector('.top-scroll-inner');
+    var track = document.querySelector('.top-scroll');
+    var thumb = document.querySelector('.top-scroll-thumb');
     var weekGrid = document.querySelector('.week-grid');
-    topScrollInner.style.width = weekGrid.scrollWidth + 'px';
-    topScroll.addEventListener('scroll', function () { weekGrid.scrollLeft = topScroll.scrollLeft; });
-    weekGrid.addEventListener('scroll', function () { topScroll.scrollLeft = weekGrid.scrollLeft; });
+
+    function updateThumb() {
+      var trackWidth = track.clientWidth;
+      var visible = weekGrid.clientWidth;
+      var total = weekGrid.scrollWidth;
+      var thumbWidth = Math.max(30, trackWidth * Math.min(1, visible / total));
+      var maxThumbLeft = trackWidth - thumbWidth;
+      var maxScrollLeft = total - visible;
+      var scrollRatio = maxScrollLeft > 0 ? weekGrid.scrollLeft / maxScrollLeft : 0;
+      thumb.style.width = thumbWidth + 'px';
+      thumb.style.left = (scrollRatio * maxThumbLeft) + 'px';
+    }
+
+    function scrollToTrackClick(clientX) {
+      var rect = track.getBoundingClientRect();
+      var thumbWidth = thumb.offsetWidth;
+      var maxThumbLeft = track.clientWidth - thumbWidth;
+      var targetLeft = Math.min(maxThumbLeft, Math.max(0, clientX - rect.left - thumbWidth / 2));
+      var maxScrollLeft = weekGrid.scrollWidth - weekGrid.clientWidth;
+      weekGrid.scrollLeft = maxThumbLeft > 0 ? (targetLeft / maxThumbLeft) * maxScrollLeft : 0;
+    }
+
+    var dragging = false;
+    var dragStartX = 0;
+    var dragStartScrollLeft = 0;
+
+    thumb.addEventListener('mousedown', function (e) {
+      dragging = true;
+      dragStartX = e.clientX;
+      dragStartScrollLeft = weekGrid.scrollLeft;
+      thumb.classList.add('dragging');
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      var maxThumbLeft = track.clientWidth - thumb.offsetWidth;
+      var maxScrollLeft = weekGrid.scrollWidth - weekGrid.clientWidth;
+      var dx = e.clientX - dragStartX;
+      var scrollDx = maxThumbLeft > 0 ? (dx / maxThumbLeft) * maxScrollLeft : 0;
+      weekGrid.scrollLeft = dragStartScrollLeft + scrollDx;
+    });
+    window.addEventListener('mouseup', function () {
+      dragging = false;
+      thumb.classList.remove('dragging');
+    });
+    track.addEventListener('mousedown', function (e) {
+      if (e.target === thumb) return;
+      scrollToTrackClick(e.clientX);
+    });
+
+    weekGrid.addEventListener('scroll', updateThumb);
+    window.addEventListener('resize', updateThumb);
+    updateThumb();
   })();
 
   (function () {
