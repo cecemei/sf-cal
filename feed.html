@@ -40,9 +40,24 @@
     border: 3px solid var(--paper);
   }
   ::-webkit-scrollbar-thumb:hover { filter: brightness(1.15); }
-  h1 { font-size: 1.4rem; }
+  h1 {
+    font-size: 1.4rem;
+    display: inline-block;
+    background: linear-gradient(90deg, #ff6ec7, #7c5cff, #4fd1c5, #ff6ec7);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: holo-shimmer 6s ease-in-out infinite;
+  }
+  @keyframes holo-shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
   h2 { font-size: 1rem; color: var(--ink-soft); margin-top: 2.5rem; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
-  .event { padding: 8px 10px; border-radius: 6px; margin: 6px 0; border: 1px solid transparent; border-left: 4px solid #ccc; }
+  .event { padding: 8px 10px; border-radius: 10px; margin: 6px 0; border: 1px solid transparent; border-left: 4px solid #ccc; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .event:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(124, 92, 255, 0.18); }
   .event a { font-weight: 400; text-decoration: none; color: var(--link); }
   .event a:hover, .event a:focus-visible { text-decoration: underline; }
   .meta { color: var(--ink-soft); font-size: 0.85rem; margin-top: 2px; }
@@ -57,9 +72,15 @@
   .legend-items { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 0.8rem; color: var(--ink-soft); }
   .legend-items div { display: flex; align-items: center; white-space: nowrap; }
   .legend-items span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; flex-shrink: 0; }
-  .legend-items .chip { cursor: pointer; user-select: none; padding: 2px 6px; border-radius: 4px; }
-  .legend-items .chip:hover { background: var(--cat-bg); }
-  .legend-items .chip.active { background: var(--cat-bg); color: var(--ink); font-weight: 600; }
+  .legend-items .chip { cursor: pointer; user-select: none; padding: 2px 8px; border-radius: 999px; transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease; }
+  .legend-items .chip:hover { background: var(--cat-bg); transform: scale(1.05); }
+  .legend-items .chip.active {
+    background: linear-gradient(90deg, #ff6ec7, #7c5cff, #4fd1c5);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 0 8px rgba(124, 92, 255, 0.45);
+  }
+  .legend-items .chip.active span { border-color: rgba(255, 255, 255, 0.6); }
   .event.hidden-by-filter { display: none; }
 </style>
 </head>
