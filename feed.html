@@ -42,6 +42,7 @@
   .hl-near { background: var(--hl-near-bg); }
   .hl-mid { background: var(--hl-mid-bg); }
   .badge-standout { display: inline-block; background: var(--standout-badge-bg); color: var(--standout-badge-ink); font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 999px; margin-top: 3px; }
+  .event.standout a { color: var(--standout-badge-ink); font-weight: 600; }
   .legend-row { display: flex; flex-wrap: wrap; gap: 28px; margin: 16px 0 14px; }
   .legend { display: flex; flex-direction: column; gap: 6px; }
   .legend-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.8; }
@@ -50,13 +51,8 @@
   .legend-items span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; flex-shrink: 0; }
   .legend-items .chip { cursor: pointer; user-select: none; padding: 2px 6px; border-radius: 4px; }
   .legend-items .chip:hover { background: var(--cat-bg); }
-  .legend-items .chip.off { opacity: 0.4; text-decoration: line-through; }
-  body.hide-band-morning .event[data-band="morning"] { display: none; }
-  body.hide-band-afternoon .event[data-band="afternoon"] { display: none; }
-  body.hide-band-evening .event[data-band="evening"] { display: none; }
-  body.hide-band-night .event[data-band="night"] { display: none; }
-  body.hide-standout .event.standout { display: none; }
-  body.hide-non-standout .event:not(.standout) { display: none; }
+  .legend-items .chip.active { background: var(--cat-bg); color: var(--ink); font-weight: 600; }
+  .event.hidden-by-filter { display: none; }
 </style>
 </head>
 <body>
@@ -71,19 +67,19 @@
     </div>
   </div>
   <div class="legend">
-    <div class="legend-label">Time of day (left edge) — click to hide</div>
+    <div class="legend-label">Time of day (left edge) — click to show only</div>
     <div class="legend-items">
-      <div class="chip" data-filter="band-morning"><span style="background: #6f95b3;"></span>Morning</div>
-      <div class="chip" data-filter="band-afternoon"><span style="background: #c49a55;"></span>Afternoon</div>
-      <div class="chip" data-filter="band-evening"><span style="background: #8f6f9e;"></span>Evening</div>
-      <div class="chip" data-filter="band-night"><span style="background: #4c5b6b;"></span>Night</div>
+      <div class="chip" data-band="morning"><span style="background: #6f95b3;"></span>Morning</div>
+      <div class="chip" data-band="afternoon"><span style="background: #c49a55;"></span>Afternoon</div>
+      <div class="chip" data-band="evening"><span style="background: #8f6f9e;"></span>Evening</div>
+      <div class="chip" data-band="night"><span style="background: #4c5b6b;"></span>Night</div>
     </div>
   </div>
   <div class="legend">
-    <div class="legend-label">Standout — click to hide</div>
+    <div class="legend-label">Standout — click to show only</div>
     <div class="legend-items">
-      <div class="chip" data-filter="standout"><span style="background: var(--standout-badge-bg); border: 1px solid var(--standout-border);"></span>Featured or 200+ going</div>
-      <div class="chip" data-filter="non-standout"><span style="background: none; border: 1px solid var(--line);"></span>Everything else</div>
+      <div class="chip" data-standout="yes"><span style="background: var(--standout-badge-bg); border: 1px solid var(--standout-border);"></span>Featured or 200+ going</div>
+      <div class="chip" data-standout="no"><span style="background: none; border: 1px solid var(--line);"></span>Everything else</div>
     </div>
   </div>
 </div>
@@ -9109,12 +9105,32 @@ Exhibition</a>
     </div>
     
 <script>
-  document.querySelectorAll('.legend-items .chip[data-filter]').forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      chip.classList.toggle('off');
-      document.body.classList.toggle('hide-' + chip.dataset.filter, chip.classList.contains('off'));
+  (function () {
+    var chips = Array.prototype.slice.call(document.querySelectorAll('.legend-items .chip'));
+    var events = Array.prototype.slice.call(document.querySelectorAll('.event'));
+
+    function apply() {
+      var bands = chips.filter(function (c) { return c.dataset.band && c.classList.contains('active'); })
+        .map(function (c) { return c.dataset.band; });
+      var standouts = chips.filter(function (c) { return c.dataset.standout && c.classList.contains('active'); })
+        .map(function (c) { return c.dataset.standout; });
+      events.forEach(function (el) {
+        var passBand = bands.length === 0 || bands.indexOf(el.dataset.band) !== -1;
+        var isStandout = el.classList.contains('standout');
+        var passStandout = standouts.length === 0
+          || (standouts.indexOf('yes') !== -1 && isStandout)
+          || (standouts.indexOf('no') !== -1 && !isStandout);
+        el.classList.toggle('hidden-by-filter', !(passBand && passStandout));
+      });
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        chip.classList.toggle('active');
+        apply();
+      });
     });
-  });
+  })();
 </script>
 </body>
 </html>
