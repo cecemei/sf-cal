@@ -31,6 +31,15 @@
     --standout-border: #c9ab6b; --standout-badge-bg: #f5ecd9; --standout-badge-ink: #7a5b1e;
   }
   body { font-family: ui-rounded, 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; max-width: 800px; margin: 16px auto; padding: 0 10px; color: var(--ink); background: var(--paper); }
+  html { scrollbar-width: thin; scrollbar-color: #7c5cff transparent; }
+  ::-webkit-scrollbar { width: 12px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff6ec7, #7c5cff, #4fd1c5);
+    border-radius: 999px;
+    border: 3px solid var(--paper);
+  }
+  ::-webkit-scrollbar-thumb:hover { filter: brightness(1.15); }
   h1 { font-size: 1.4rem; }
   h2 { font-size: 1rem; color: var(--ink-soft); margin-top: 2.5rem; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
   .event { padding: 8px 10px; border-radius: 6px; margin: 6px 0; border: 1px solid transparent; border-left: 4px solid #ccc; }
