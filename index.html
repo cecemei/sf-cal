@@ -83,8 +83,9 @@
   body.hide-band-morning .event[data-band="morning"] { display: none; }
   body.hide-band-afternoon .event[data-band="afternoon"] { display: none; }
   body.hide-band-evening .event[data-band="evening"] { display: none; }
-  body.hide-band-late-night .event[data-band="late-night"] { display: none; }
+  body.hide-band-night .event[data-band="night"] { display: none; }
   body.hide-standout .event.standout { display: none; }
+  body.hide-non-standout .event:not(.standout) { display: none; }
   .scroll-hint { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 12px; }
   .week-grid { scrollbar-width: thin; scrollbar-color: var(--line) transparent; padding-bottom: 8px; }
   .week-grid::-webkit-scrollbar { height: 8px; }
@@ -109,13 +110,14 @@
       <div class="chip" data-filter="band-morning"><span style="background: #6f95b3;"></span>Morning</div>
       <div class="chip" data-filter="band-afternoon"><span style="background: #c49a55;"></span>Afternoon</div>
       <div class="chip" data-filter="band-evening"><span style="background: #8f6f9e;"></span>Evening</div>
-      <div class="chip" data-filter="band-late-night"><span style="background: #4c5b6b;"></span>Late night</div>
+      <div class="chip" data-filter="band-night"><span style="background: #4c5b6b;"></span>Night</div>
     </div>
   </div>
   <div class="legend">
     <div class="legend-label">Standout — click to hide</div>
     <div class="legend-items">
       <div class="chip" data-filter="standout"><span style="background: var(--standout-badge-bg); border: 1px solid var(--standout-border);"></span>Featured or 200+ going</div>
+      <div class="chip" data-filter="non-standout"><span style="background: none; border: 1px solid var(--line);"></span>Everything else</div>
     </div>
   </div>
 </div>
@@ -1388,7 +1390,7 @@
       <div class="desc">Dead Internet Museum (DIM) imagines a near-future Internet haunted by automation, synthetic media, invisible labor, surveillance, and compliance.</div>
     </div>
     
-    <div class="event hl-mid" data-band="late-night" style="border-color: #4c5b6b;">
+    <div class="event hl-mid" data-band="night" style="border-color: #4c5b6b;">
       <a href="https://partiful.com/e/w88jwGrl2QneoPsQ0iSM" target="_blank">🎉 Outside Lands After Party</a>
       
       <div class="meta">10:00–2:00 AM · 2032 Union St, San Francisco, CA 94123 · 4.0 km <span class="cat">partiful</span></div>
