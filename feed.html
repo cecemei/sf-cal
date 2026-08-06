@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Discovery Feed</title>
 <style>
   :root {
@@ -82,10 +83,14 @@
   }
   .legend-items .chip.active span { border-color: rgba(255, 255, 255, 0.6); }
   .event.hidden-by-filter { display: none; }
+  .page-nav { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 10px; }
+  .page-nav a { color: var(--link); text-decoration: none; }
+  .page-nav a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
 <h1>Discovery Feed</h1>
+<div class="page-nav">Updated Thu, Aug 6 · 1:46 AM · <a href="index.html">← Calendar</a></div>
 <div class="legend-row">
   <div class="legend">
     <div class="legend-label">Distance — click to show only</div>
