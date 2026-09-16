@@ -129,6 +129,14 @@
   .empty { color: var(--ink-soft); font-size: 0.8rem; font-style: italic; }
   .legend-row { display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 14px; }
   .legend { display: flex; flex-direction: column; gap: 6px; }
+  /* Date range renders first (see BODY_TEMPLATE) and is the widest group by
+     far once its content (5 window chips + back/display/forward) is laid
+     out -- without forcing it onto its own row, the flex-wrap above judged
+     it "fits" alongside Distance and let the two sit on the same line,
+     which visually overlapped ("date showing thing is overlapping"). A
+     dedicated full-width row for it avoids depending on exact pixel-width
+     flex-wrap math ever again. */
+  .legend-row > .legend:first-child { width: 100%; }
   .legend-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.8; }
   .legend-items { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 0.8rem; color: var(--ink-soft); }
   .legend-items div { display: flex; align-items: center; white-space: nowrap; }
@@ -156,7 +164,7 @@
      since there are only two of them, not five. */
   #date-back, #date-forward { padding: 4px 11px; font-size: 0.85rem; }
   .date-nav .chip.chip-disabled { opacity: 0.35; cursor: default; pointer-events: none; }
-  .legend-hint { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 10px; }
+  .legend-hint { font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
   /* Shared by both .event cards (all chip filters) and .day-col (the Date
      range filter alone, since only that one can remove a whole day rather
      than just individual events within it -- see apply()'s dayCols loop). */
@@ -191,7 +199,7 @@
 </head>
 <body>
 <h1 id="cal-title">Next 3 Days</h1>
-<div class="page-nav">Updated Wed, Sep 16 · 3:11 PM · <a href="feed.html">What's new →</a></div>
+<div class="page-nav">Updated Wed, Sep 16 · 4:52 PM · <a href="feed.html">What's new →</a></div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
   <div class="legend">
