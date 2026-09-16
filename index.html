@@ -147,8 +147,8 @@
      controls (5 window-length chips + back/display/forward/Today) into one
      line, so it needs a smaller gap and smaller chips than a typical
      handful of filter tags to stay compact instead of wrapping/sprawling. */
-  .date-nav { margin-bottom: 2px; gap: 4px 6px; }
-  .date-nav .chip { padding: 2px 6px; font-size: 0.72rem; }
+  .date-nav { margin-bottom: 2px; gap: 3px 4px; }
+  .date-nav .chip { padding: 1px 5px; font-size: 0.68rem; line-height: 1.4; }
   .date-nav .chip.chip-disabled { opacity: 0.35; cursor: default; pointer-events: none; }
   .legend-hint { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 10px; }
   /* Shared by both .event cards (all chip filters) and .day-col (the Date
@@ -185,7 +185,7 @@
 </head>
 <body>
 <h1 id="cal-title">Next 3 Days</h1>
-<div class="page-nav">Updated Wed, Sep 16 · 2:29 PM · <a href="feed.html">What's new →</a></div>
+<div class="page-nav">Updated Wed, Sep 16 · 3:05 PM · <a href="feed.html">What's new →</a></div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
   <div class="legend">
@@ -29853,10 +29853,14 @@
 
     // Disables Previous/Next when there's no well-defined length to page by
     // (an open-ended or fully-cleared range) or when paging would go past
-    // what the page actually has data for, and highlights Today only while
-    // the selected window actually starts today. The window-length select
-    // (below) is what shows the current length now, so these stay plain
-    // arrows rather than repeating it.
+    // what the page actually has data for. Today used to get the same
+    // flashy .active highlight as a selected window-length chip while the
+    // range already started today, but that read as "Today is a filter
+    // that's on" rather than "you're already here" -- per feedback ("today
+    // 不要highlight"), it's disabled instead (same chip-disabled treatment
+    // as Back/Forward at their own boundary), since clicking it then would
+    // be a no-op anyway. The date-range-display readout is what actually
+    // shows "Today" now (see syncDateRangeDisplay).
     function updateNavButtons(startVal, endVal) {
       var len = rangeLengthDays(startVal, endVal);
       var minBound = dateStart ? dateStart.dataset.min : '';
@@ -29870,7 +29874,7 @@
         dateForward.classList.toggle('chip-disabled', !!forwardDisabled);
       }
       if (dateToday) {
-        dateToday.classList.toggle('active', startVal === (pacificToday || defaultStart));
+        dateToday.classList.toggle('chip-disabled', startVal === (pacificToday || defaultStart));
       }
     }
 
@@ -29985,6 +29989,7 @@
     // was cleared) -- this also doubles as the old reset control, since
     // "today" is exactly where the page starts out.
     if (dateToday) dateToday.addEventListener('click', function () {
+      if (dateToday.classList.contains('chip-disabled')) return;
       var startVal = dateStart ? dateStart.value : '';
       var endVal = dateEnd ? dateEnd.value : '';
       var len = rangeLengthDays(startVal, endVal) || rangeLengthDays(defaultStart, defaultEnd) || 3;
