@@ -143,12 +143,18 @@
   }
   .legend-items .chip.active span { border-color: rgba(255, 255, 255, 0.6); }
   .date-range-display { font-weight: 600; color: var(--ink); white-space: nowrap; padding: 0 2px; }
-  /* Tighter than the other legend groups on purpose -- this row packs 8
-     controls (5 window-length chips + back/display/forward/Today) into one
-     line, so it needs a smaller gap and smaller chips than a typical
-     handful of filter tags to stay compact instead of wrapping/sprawling. */
+  /* Tighter than the other legend groups on purpose -- this row packs 7
+     controls (5 window-length chips + back/display/forward) into one line,
+     so it needs a smaller gap and smaller chips than a typical handful of
+     filter tags to stay compact instead of wrapping/sprawling. */
   .date-nav { margin-bottom: 2px; gap: 3px 4px; }
   .date-nav .chip { padding: 1px 5px; font-size: 0.68rem; line-height: 1.4; }
+  /* Previous/Next specifically get a bigger hit target than the tiny
+     window-length chips -- a single-character arrow at the same tight
+     padding as "3D"/"7D" was too small to reliably tap/click (feedback:
+     "左右键有点点不到"). Sizing these up doesn't fight the "compact" goal
+     since there are only two of them, not five. */
+  #date-back, #date-forward { padding: 4px 11px; font-size: 0.85rem; }
   .date-nav .chip.chip-disabled { opacity: 0.35; cursor: default; pointer-events: none; }
   .legend-hint { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 10px; }
   /* Shared by both .event cards (all chip filters) and .day-col (the Date
@@ -185,7 +191,7 @@
 </head>
 <body>
 <h1 id="cal-title">Next 3 Days</h1>
-<div class="page-nav">Updated Wed, Sep 16 · 3:05 PM · <a href="feed.html">What's new →</a></div>
+<div class="page-nav">Updated Wed, Sep 16 · 3:11 PM · <a href="feed.html">What's new →</a></div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
   <div class="legend">
@@ -199,7 +205,6 @@
       <div class="chip date-nav-chip" id="date-back" aria-label="Previous period" title="Previous period">◀</div>
       <span id="date-range-display" class="date-range-display"></span>
       <div class="chip date-nav-chip" id="date-forward" aria-label="Next period" title="Next period">▶</div>
-      <div class="chip date-nav-chip" id="date-today">Today</div>
       <input type="hidden" id="date-start" value="2026-09-16" data-min="2026-09-16" data-max="2026-11-14">
       <input type="hidden" id="date-end" value="2026-09-18" data-min="2026-09-16" data-max="2026-11-14">
     </div>
@@ -29720,16 +29725,19 @@
   })();
 
   (function () {
-    // Today/Previous/Next (below) are chips too, visually, but they're
-    // navigation actions rather than the show-only multi-select toggle
-    // every other chip group uses -- so they're excluded from the generic
-    // `chips` list here and handled by their own click wiring below instead.
+    // Previous/Next (below) are chips too, visually, but they're navigation
+    // actions rather than the show-only multi-select toggle every other
+    // chip group uses -- so they're excluded from the generic `chips` list
+    // here and handled by their own click wiring below instead. There's no
+    // separate "Today" button any more (per feedback: showing "Today" as
+    // the date-range-display text, see syncDateRangeDisplay, is enough --
+    // a standalone button for it was redundant); Previous/Next plus the
+    // window-length chips are the only way to move the range now.
     var chips = Array.prototype.slice.call(document.querySelectorAll('.legend-items .chip:not(.date-nav-chip)'));
     var events = Array.prototype.slice.call(document.querySelectorAll('.event'));
     var dayCols = Array.prototype.slice.call(document.querySelectorAll('.day-col'));
     var dateStart = document.getElementById('date-start');
     var dateEnd = document.getElementById('date-end');
-    var dateToday = document.getElementById('date-today');
     var dateBack = document.getElementById('date-back');
     var dateForward = document.getElementById('date-forward');
     var windowChips = Array.prototype.slice.call(document.querySelectorAll('.window-chip'));
@@ -29853,14 +29861,8 @@
 
     // Disables Previous/Next when there's no well-defined length to page by
     // (an open-ended or fully-cleared range) or when paging would go past
-    // what the page actually has data for. Today used to get the same
-    // flashy .active highlight as a selected window-length chip while the
-    // range already started today, but that read as "Today is a filter
-    // that's on" rather than "you're already here" -- per feedback ("today
-    // 不要highlight"), it's disabled instead (same chip-disabled treatment
-    // as Back/Forward at their own boundary), since clicking it then would
-    // be a no-op anyway. The date-range-display readout is what actually
-    // shows "Today" now (see syncDateRangeDisplay).
+    // what the page actually has data for. There's no separate Today
+    // button to manage here any more -- see the note above windowChips.
     function updateNavButtons(startVal, endVal) {
       var len = rangeLengthDays(startVal, endVal);
       var minBound = dateStart ? dateStart.dataset.min : '';
@@ -29873,13 +29875,10 @@
         var forwardDisabled = !len || (maxBound && addDays(endVal, len) > maxBound);
         dateForward.classList.toggle('chip-disabled', !!forwardDisabled);
       }
-      if (dateToday) {
-        dateToday.classList.toggle('chip-disabled', startVal === (pacificToday || defaultStart));
-      }
     }
 
     // Keeps exactly one window-length chip marked active, matching the
-    // currently selected range's length (e.g. after Today/Previous/Next
+    // currently selected range's length (e.g. after Previous/Next
     // change it) -- none end up active when the current range's length
     // doesn't match any of them (shouldn't normally happen, since paging
     // preserves whatever length was last chosen, but this fails safe
@@ -29982,22 +29981,6 @@
     });
     if (dateStart) dateStart.addEventListener('change', apply);
     if (dateEnd) dateEnd.addEventListener('change', apply);
-
-    // Today jumps back to the actual current Pacific date, keeping
-    // whatever window length is currently selected (falling back to the
-    // page's own default length if the range isn't well-defined, e.g. it
-    // was cleared) -- this also doubles as the old reset control, since
-    // "today" is exactly where the page starts out.
-    if (dateToday) dateToday.addEventListener('click', function () {
-      if (dateToday.classList.contains('chip-disabled')) return;
-      var startVal = dateStart ? dateStart.value : '';
-      var endVal = dateEnd ? dateEnd.value : '';
-      var len = rangeLengthDays(startVal, endVal) || rangeLengthDays(defaultStart, defaultEnd) || 3;
-      var today = pacificToday || defaultStart;
-      if (dateStart) dateStart.value = today;
-      if (dateEnd) dateEnd.value = addDays(today, len - 1);
-      apply();
-    });
 
     // Previous/Next page the current window by its own length in each
     // direction, calendar-app style -- e.g. a 14-day window jumps 14 days
