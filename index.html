@@ -143,7 +143,12 @@
   }
   .legend-items .chip.active span { border-color: rgba(255, 255, 255, 0.6); }
   .date-range-display { font-weight: 600; color: var(--ink); white-space: nowrap; padding: 0 2px; }
-  .date-nav { margin-bottom: 2px; }
+  /* Tighter than the other legend groups on purpose -- this row packs 8
+     controls (5 window-length chips + back/display/forward/Today) into one
+     line, so it needs a smaller gap and smaller chips than a typical
+     handful of filter tags to stay compact instead of wrapping/sprawling. */
+  .date-nav { margin-bottom: 2px; gap: 4px 6px; }
+  .date-nav .chip { padding: 2px 6px; font-size: 0.72rem; }
   .date-nav .chip.chip-disabled { opacity: 0.35; cursor: default; pointer-events: none; }
   .legend-hint { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 10px; }
   /* Shared by both .event cards (all chip filters) and .day-col (the Date
@@ -180,17 +185,17 @@
 </head>
 <body>
 <h1 id="cal-title">Next 3 Days</h1>
-<div class="page-nav">Updated Wed, Sep 16 · 1:43 PM · <a href="feed.html">What's new →</a></div>
+<div class="page-nav">Updated Wed, Sep 16 · 2:29 PM · <a href="feed.html">What's new →</a></div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
   <div class="legend">
     <div class="legend-label">Date range</div>
     <div class="legend-items date-nav">
-      <div class="chip date-nav-chip window-chip" data-window="1">1 Day</div>
-      <div class="chip date-nav-chip window-chip" data-window="3">3 Days</div>
-      <div class="chip date-nav-chip window-chip" data-window="7">7 Days</div>
-      <div class="chip date-nav-chip window-chip" data-window="14">14 Days</div>
-      <div class="chip date-nav-chip window-chip" data-window="30">30 Days</div>
+      <div class="chip date-nav-chip window-chip" data-window="1">1D</div>
+      <div class="chip date-nav-chip window-chip" data-window="3">3D</div>
+      <div class="chip date-nav-chip window-chip" data-window="7">7D</div>
+      <div class="chip date-nav-chip window-chip" data-window="14">14D</div>
+      <div class="chip date-nav-chip window-chip" data-window="30">30D</div>
       <div class="chip date-nav-chip" id="date-back" aria-label="Previous period" title="Previous period">◀</div>
       <span id="date-range-display" class="date-range-display"></span>
       <div class="chip date-nav-chip" id="date-forward" aria-label="Next period" title="Next period">▶</div>
