@@ -129,23 +129,6 @@
   .empty { color: var(--ink-soft); font-size: 0.8rem; font-style: italic; }
   .legend-row { display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 14px; }
   .legend { display: flex; flex-direction: column; gap: 6px; }
-  /* Date range renders first (see BODY_TEMPLATE) and is the widest group by
-     far once its content (5 window chips + back/display/forward) is laid
-     out -- without forcing it onto its own row, the flex-wrap above judged
-     it "fits" alongside Distance and let the two sit on the same line,
-     which visually overlapped ("date showing thing is overlapping"). A
-     dedicated full-width row for it avoids depending on exact pixel-width
-     flex-wrap math ever again. */
-  .legend-row > .legend:first-child { width: 100%; }
-  /* The hint only makes sense for the show-only multi-select chip groups
-     (Distance, Time of day, Standout, ...) -- Date range's chips are
-     navigation, not that click-to-filter pattern, so the hint sits
-     between Date range and the rest rather than above everything (per
-     feedback: "这个要在date下面 因为不适用于date"). It's a direct
-     .legend-row child now (previously a sibling above the whole row), so
-     it needs its own explicit full-width line for the same reason
-     .legend:first-child above does. */
-  .legend-row > .legend-hint { width: 100%; margin: -6px 0 2px; }
   .legend-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.8; }
   .legend-items { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 0.8rem; color: var(--ink-soft); }
   .legend-items div { display: flex; align-items: center; white-space: nowrap; }
@@ -168,11 +151,17 @@
   }
   .legend-items .chip.active span { border-color: rgba(255, 255, 255, 0.6); }
   .date-range-display { font-weight: 600; color: var(--ink); white-space: nowrap; padding: 0 2px; width: auto; height: auto; }
+  /* Merges what used to be two separate lines -- "Updated ... What's new"
+     and the Date range chip row -- into one, per feedback ("这个可以合并
+     一下放在第二行date那里"): .page-nav sits on the left, the date-nav
+     chips on the right, wrapping onto their own line on narrow screens
+     rather than ever overlapping or forcing horizontal scroll. */
+  .page-nav-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; row-gap: 4px; margin-bottom: 10px; }
   /* Tighter than the other legend groups on purpose -- this row packs 7
      controls (5 window-length chips + back/display/forward) into one line,
      so it needs a smaller gap and smaller chips than a typical handful of
      filter tags to stay compact instead of wrapping/sprawling. */
-  .date-nav { margin-bottom: 2px; gap: 3px 4px; }
+  .date-nav { gap: 3px 4px; }
   .date-nav .chip { padding: 1px 5px; font-size: 0.68rem; line-height: 1.4; }
   /* Previous/Next specifically get a bigger hit target than the tiny
      window-length chips -- a single-character arrow at the same tight
@@ -187,7 +176,9 @@
      than just individual events within it -- see apply()'s dayCols loop). */
   .hidden-by-filter { display: none; }
   .scroll-hint { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 12px; }
-  .page-nav { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 10px; }
+  /* No margin-bottom here any more -- .page-nav-row (its new parent) owns
+     the spacing below the whole merged row instead. */
+  .page-nav { font-size: 0.75rem; color: var(--ink-soft); }
   .page-nav a { color: var(--link); text-decoration: none; }
   .page-nav a:hover { text-decoration: underline; }
   .week-grid { scrollbar-width: thin; scrollbar-color: var(--line) transparent; padding-bottom: 8px; }
@@ -216,23 +207,23 @@
 </head>
 <body>
 <h1 id="cal-title">Next 3 Days</h1>
-<div class="page-nav">Updated Thu, Sep 17 · 9:46 AM · <a href="feed.html">What's new →</a></div>
-<div class="legend-row">
-  <div class="legend">
-    <div class="legend-items date-nav">
-      <div class="chip date-nav-chip window-chip" data-window="1">1D</div>
-      <div class="chip date-nav-chip window-chip" data-window="3">3D</div>
-      <div class="chip date-nav-chip window-chip" data-window="7">7D</div>
-      <div class="chip date-nav-chip window-chip" data-window="14">14D</div>
-      <div class="chip date-nav-chip window-chip" data-window="30">30D</div>
-      <div class="chip date-nav-chip" id="date-back" aria-label="Previous period" title="Previous period">◀</div>
-      <span id="date-range-display" class="date-range-display"></span>
-      <div class="chip date-nav-chip" id="date-forward" aria-label="Next period" title="Next period">▶</div>
-      <input type="hidden" id="date-start" value="2026-09-17" data-min="2026-09-17" data-max="2026-11-15">
-      <input type="hidden" id="date-end" value="2026-09-19" data-min="2026-09-17" data-max="2026-11-15">
-    </div>
+<div class="page-nav-row">
+  <div class="page-nav">Updated Thu, Sep 17 · 10:32 AM · <a href="feed.html">What's new →</a></div>
+  <div class="legend-items date-nav">
+    <div class="chip date-nav-chip window-chip" data-window="1">1D</div>
+    <div class="chip date-nav-chip window-chip" data-window="3">3D</div>
+    <div class="chip date-nav-chip window-chip" data-window="7">7D</div>
+    <div class="chip date-nav-chip window-chip" data-window="14">14D</div>
+    <div class="chip date-nav-chip window-chip" data-window="30">30D</div>
+    <div class="chip date-nav-chip" id="date-back" aria-label="Previous period" title="Previous period">◀</div>
+    <span id="date-range-display" class="date-range-display"></span>
+    <div class="chip date-nav-chip" id="date-forward" aria-label="Next period" title="Next period">▶</div>
+    <input type="hidden" id="date-start" value="2026-09-17" data-min="2026-09-17" data-max="2026-11-15">
+    <input type="hidden" id="date-end" value="2026-09-19" data-min="2026-09-17" data-max="2026-11-15">
   </div>
-  <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
+</div>
+<div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
+<div class="legend-row">
   <div class="legend">
     <div class="legend-label">Distance</div>
     <div class="legend-items">
