@@ -137,6 +137,15 @@
      dedicated full-width row for it avoids depending on exact pixel-width
      flex-wrap math ever again. */
   .legend-row > .legend:first-child { width: 100%; }
+  /* The hint only makes sense for the show-only multi-select chip groups
+     (Distance, Time of day, Standout, ...) -- Date range's chips are
+     navigation, not that click-to-filter pattern, so the hint sits
+     between Date range and the rest rather than above everything (per
+     feedback: "这个要在date下面 因为不适用于date"). It's a direct
+     .legend-row child now (previously a sibling above the whole row), so
+     it needs its own explicit full-width line for the same reason
+     .legend:first-child above does. */
+  .legend-row > .legend-hint { width: 100%; margin: -6px 0 2px; }
   .legend-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.8; }
   .legend-items { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 0.8rem; color: var(--ink-soft); }
   .legend-items div { display: flex; align-items: center; white-space: nowrap; }
@@ -207,8 +216,7 @@
 </head>
 <body>
 <h1 id="cal-title">Next 3 Days</h1>
-<div class="page-nav">Updated Wed, Sep 16 · 5:28 PM · <a href="feed.html">What's new →</a></div>
-<div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
+<div class="page-nav">Updated Wed, Sep 16 · 5:33 PM · <a href="feed.html">What's new →</a></div>
 <div class="legend-row">
   <div class="legend">
     <div class="legend-label">Date range</div>
@@ -225,6 +233,7 @@
       <input type="hidden" id="date-end" value="2026-09-18" data-min="2026-09-16" data-max="2026-11-14">
     </div>
   </div>
+  <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
   <div class="legend">
     <div class="legend-label">Distance</div>
     <div class="legend-items">
@@ -30102,11 +30111,13 @@
     // native date picker.
 
     // The h1 starts as "Next 3 Days" (BODY_TEMPLATE) with the date
-    // inputs pre-filled to match that exact same window -- captured once,
-    // on load, so later comparisons/restoration don't need a second copy
-    // of either value baked in separately.
+    // inputs pre-filled to match that exact same window -- defaultStart/
+    // defaultEnd capture that starting point once, on load, so later
+    // comparisons (rollover-shift, clampToToday, etc.) don't need a second
+    // copy of either value baked in separately. updateTitle() itself no
+    // longer compares against a fixed default title text -- it recomputes
+    // "Next N Days" for whatever window is currently selected.
     var titleEl = document.getElementById('cal-title');
-    var defaultTitleText = titleEl ? titleEl.textContent : '';
     var defaultStart = dateStart ? dateStart.value : '';
     var defaultEnd = dateEnd ? dateEnd.value : '';
     var MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -30188,12 +30199,18 @@
     }
 
     // Keeps the page's title honest once the Date range filter actually
-    // changes which days are showing -- "Next 3 Days" only means
-    // something while that filter is still at its default value.
+    // changes which days are showing. "Next N Days" isn't just the page's
+    // own default (3) -- it applies to ANY window that still starts today,
+    // e.g. clicking the 7-Day chip while at today shows "Next 7 Days", not
+    // a literal "Sep 16 – Sep 22" (per feedback: "如果是最近7天title就写
+    // 最近7天"). Once the window is paged away from today, "Next N Days"
+    // stops being true, so it falls back to the concrete date range.
     function updateTitle(startVal, endVal) {
       if (!titleEl) return;
-      if (startVal === defaultStart && endVal === defaultEnd) {
-        titleEl.textContent = defaultTitleText;
+      var today = pacificToday || defaultStart;
+      var len = rangeLengthDays(startVal, endVal);
+      if (startVal === today && len) {
+        titleEl.textContent = 'Next ' + len + ' Days';
         return;
       }
       // No dedicated control reaches this by clicking anymore, but a native
