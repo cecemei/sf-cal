@@ -154,10 +154,12 @@
   /* Merges what used to be two separate lines -- "Updated ... What's new"
      and the Date range chip row -- into one, per feedback ("这个可以合并
      一下放在第二行date那里"): the date-nav chips sit on the left (per
-     "日期放在最左边"), .page-nav sits on the right, wrapping onto their
-     own line on narrow screens rather than ever overlapping or forcing
-     horizontal scroll. */
-  .page-nav-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; row-gap: 4px; margin-bottom: 10px; }
+     "日期放在最左边"), and .page-nav simply follows right after with a
+     small gap -- NOT pinned to the far right edge (per "Updated ...
+     也没有必要放在最右边"), so on a wide screen it sits close to the date
+     chips instead of stranded way out at the edge. Still wraps onto its
+     own line on narrow screens rather than ever overlapping. */
+  .page-nav-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; column-gap: 16px; row-gap: 4px; margin-bottom: 10px; }
   /* Tighter than the other legend groups on purpose -- this row packs 7
      controls (5 window-length chips + back/display/forward) into one line,
      so it needs a smaller gap and smaller chips than a typical handful of
@@ -221,7 +223,7 @@
     <input type="hidden" id="date-start" value="2026-09-17" data-min="2026-09-17" data-max="2026-11-15">
     <input type="hidden" id="date-end" value="2026-09-19" data-min="2026-09-17" data-max="2026-11-15">
   </div>
-  <div class="page-nav">Updated Thu, Sep 17 · 11:58 AM · <a href="feed.html">What's new →</a></div>
+  <div class="page-nav">Updated Thu, Sep 17 · 3:28 PM · <a href="feed.html">What's new →</a></div>
 </div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
