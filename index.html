@@ -153,9 +153,10 @@
   .date-range-display { font-weight: 600; color: var(--ink); white-space: nowrap; padding: 0 2px; width: auto; height: auto; }
   /* Merges what used to be two separate lines -- "Updated ... What's new"
      and the Date range chip row -- into one, per feedback ("这个可以合并
-     一下放在第二行date那里"): .page-nav sits on the left, the date-nav
-     chips on the right, wrapping onto their own line on narrow screens
-     rather than ever overlapping or forcing horizontal scroll. */
+     一下放在第二行date那里"): the date-nav chips sit on the left (per
+     "日期放在最左边"), .page-nav sits on the right, wrapping onto their
+     own line on narrow screens rather than ever overlapping or forcing
+     horizontal scroll. */
   .page-nav-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; row-gap: 4px; margin-bottom: 10px; }
   /* Tighter than the other legend groups on purpose -- this row packs 7
      controls (5 window-length chips + back/display/forward) into one line,
@@ -208,7 +209,6 @@
 <body>
 <h1 id="cal-title">Next 3 Days</h1>
 <div class="page-nav-row">
-  <div class="page-nav">Updated Thu, Sep 17 · 11:25 AM · <a href="feed.html">What's new →</a></div>
   <div class="legend-items date-nav">
     <div class="chip date-nav-chip window-chip" data-window="1">1D</div>
     <div class="chip date-nav-chip window-chip" data-window="3">3D</div>
@@ -221,6 +221,7 @@
     <input type="hidden" id="date-start" value="2026-09-17" data-min="2026-09-17" data-max="2026-11-15">
     <input type="hidden" id="date-end" value="2026-09-19" data-min="2026-09-17" data-max="2026-11-15">
   </div>
+  <div class="page-nav">Updated Thu, Sep 17 · 11:58 AM · <a href="feed.html">What's new →</a></div>
 </div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
