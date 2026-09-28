@@ -223,7 +223,7 @@
     <input type="hidden" id="date-start" value="2026-09-28" data-min="2026-09-28" data-max="2026-11-26">
     <input type="hidden" id="date-end" value="2026-09-30" data-min="2026-09-28" data-max="2026-11-26">
   </div>
-  <div class="page-nav">Updated Mon, Sep 28 · 7:52 AM · <a href="feed.html">What's new →</a></div>
+  <div class="page-nav">Updated Mon, Sep 28 · 10:28 AM · <a href="feed.html">What's new →</a></div>
 </div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
@@ -26777,7 +26777,20 @@
   if (!todayStr) return;
 
   fetch(SUPABASE_URL + '/rest/v1/approved_manual_events?region_slug=eq.' + encodeURIComponent(REGION_SLUG) + '&select=*', {
-    headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
+    // Belt-and-suspenders against a stale result after an admin revokes/
+    // approves a submission (webapp/main.py's /admin/submissions) -- the
+    // view itself (see .env.example's SQL) already re-evaluates its WHERE
+    // status='approved' fresh on every query, so a revoked event stops
+    // being returned the moment anyone loads/reloads this page regardless
+    // of this option. This just also rules out the browser (or a CDN in
+    // front of Supabase) serving a cached copy of an earlier response
+    // instead of actually asking again -- cheap to guarantee, no reason to
+    // rely on nothing-in-particular setting a Cache-Control header here.
+    // Doesn't help a tab that was already open from BEFORE the change,
+    // though -- this fetch only ever runs once, at page load, so that tab
+    // won't drop a revoked event until it's reloaded.
+    cache: 'no-store',
   })
     .then(function (r) { return r.ok ? r.json() : []; })
     .then(function (rows) {
