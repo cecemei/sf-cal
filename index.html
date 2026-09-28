@@ -223,7 +223,7 @@
     <input type="hidden" id="date-start" value="2026-09-27" data-min="2026-09-27" data-max="2026-11-25">
     <input type="hidden" id="date-end" value="2026-09-29" data-min="2026-09-27" data-max="2026-11-25">
   </div>
-  <div class="page-nav">Updated Sun, Sep 27 · 5:26 PM · <a href="feed.html">What's new →</a></div>
+  <div class="page-nav">Updated Sun, Sep 27 · 10:46 PM · <a href="feed.html">What's new →</a></div>
 </div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
@@ -270,6 +270,7 @@
       <div class="chip active" data-source="luma">✨ Luma</div>
       <div class="chip active" data-source="partiful">🎉 Partiful</div>
       <div class="chip" data-source="eventbrite">🎫 Eventbrite</div>
+      <div class="chip active" data-source="manual">📝 Submitted</div>
     </div>
   </div>
 </div>
@@ -27821,11 +27822,231 @@
       });
     });
 
+    // Lets code OUTSIDE this closure (the manual-submissions fetch script
+    // below, added separately by _manual_events_script() -- see its own
+    // docstring) tell this filter to notice newly-injected `.event`/
+    // `.day-col` elements. `events`/`dayCols` above are captured once at
+    // load, so a plain apply() call alone wouldn't see anything appended
+    // to the DOM after that -- this re-queries both before calling apply().
+    window.__calRefreshAfterInject = function () {
+      events = Array.prototype.slice.call(document.querySelectorAll('.event'));
+      dayCols = Array.prototype.slice.call(document.querySelectorAll('.day-col'));
+      apply();
+    };
+
     // Chips marked class="active" in the template (see BODY_TEMPLATE) set
     // the page's default filter state -- run once on load so that state is
     // actually reflected in hidden-by-filter, not just the chip styling.
     apply();
   })();
+</script>
+
+<script>
+(function () {
+  var SUPABASE_URL = "https://ehakthjuenssjpxanldm.supabase.co";
+  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYWt0aGp1ZW5zc2pweGFubGRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMjgwMDksImV4cCI6MjEwMzcwNDAwOX0.yvl_hFv2hD4U0VDGN-M-FlmAHoN6XbwBX5caa4XMKxg";
+  var REGION_SLUG = "sf";
+  var RENDER_DAYS_AHEAD = 60;
+  var TIME_BANDS = [
+    {key: 'morning', start: 5, end: 12, color: '#6f95b3'},
+    {key: 'afternoon', start: 12, end: 17, color: '#c49a55'},
+    {key: 'evening', start: 17, end: 24, color: '#8f6f9e'}
+  ];
+  var DEFAULT_BAND = {key: 'evening', color: '#8f6f9e'};
+
+  // Same Pacific-anchored "what day is it right now" helper as
+  // BODY_TEMPLATE's own script above -- duplicated rather than shared
+  // since this script is injected independently and may run even when
+  // SUPABASE_URL/KEY are unset elsewhere on a page that still has the
+  // other copy (kept deliberately tiny to make that duplication cheap).
+  function getPacificToday() {
+    try {
+      var parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit'
+      }).formatToParts(new Date());
+      var lookup = {};
+      parts.forEach(function (p) { lookup[p.type] = p.value; });
+      return lookup.year + '-' + lookup.month + '-' + lookup.day;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function addDays(isoStr, n) {
+    var d = new Date(isoStr + 'T00:00:00');
+    d.setDate(d.getDate() + n);
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  // Pacific-local wall-clock date/hour/minute for an ISO date-time string,
+  // WITHOUT trusting the browser's own local timezone -- same reasoning as
+  // getPacificToday() above. Falls back to a naive (browser-local) Date
+  // parse if Intl support is missing, same graceful-degradation pattern
+  // used throughout this codebase.
+  function pacificParts(isoDateTime) {
+    var d = new Date(isoDateTime);
+    if (isNaN(d.getTime())) return null;
+    try {
+      var parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false
+      }).formatToParts(d);
+      var lookup = {};
+      parts.forEach(function (p) { lookup[p.type] = p.value; });
+      var hour = parseInt(lookup.hour, 10);
+      if (hour === 24) hour = 0;
+      return {date: lookup.year + '-' + lookup.month + '-' + lookup.day, hour: hour, minute: parseInt(lookup.minute, 10)};
+    } catch (e) {
+      return {date: d.toISOString().slice(0, 10), hour: d.getHours(), minute: d.getMinutes()};
+    }
+  }
+
+  // Port of generate_weekly_picks.py's _expand_recurrence() -- same two
+  // shapes, same "today" anchoring, same "unrecognized/incomplete shape
+  // returns no occurrences rather than guessing" rule. Returns a list of
+  // {date, hour, minute} (Pacific-local) within
+  // [todayStr, todayStr+RENDER_DAYS_AHEAD-1] -- matching exactly which
+  // dates this page actually has a .day-col for.
+  function expandRecurrence(rec, todayStr) {
+    if (!rec || !rec.type) return [];
+    var maxStr = addDays(todayStr, RENDER_DAYS_AHEAD - 1);
+    if (rec.type === 'single') {
+      if (!rec.start_at) return [];
+      var parts = pacificParts(rec.start_at);
+      if (!parts || parts.date < todayStr || parts.date > maxStr) return [];
+      return [parts];
+    }
+    if (rec.type === 'weekly') {
+      var dow = rec.day_of_week;
+      var timeParts = (rec.start_time || '').split(':');
+      var hour = parseInt(timeParts[0], 10);
+      var minute = parseInt(timeParts[1], 10);
+      if (dow == null || isNaN(hour) || isNaN(minute)) return [];
+      var occurrences = [];
+      var cursor = todayStr;
+      while (cursor <= maxStr) {
+        // JS Date#getDay(): 0=Sunday..6=Saturday -- convert to this
+        // codebase's own 0=Monday..6=Sunday convention (Python's
+        // datetime.weekday(), what day_of_week is stored as) before
+        // comparing.
+        var jsDow = new Date(cursor + 'T00:00:00').getDay();
+        var pyDow = (jsDow + 6) % 7;
+        if (pyDow === dow) occurrences.push({date: cursor, hour: hour, minute: minute});
+        cursor = addDays(cursor, 1);
+      }
+      return occurrences;
+    }
+    return [];
+  }
+
+  function timeBand(hour) {
+    for (var i = 0; i < TIME_BANDS.length; i++) {
+      var b = TIME_BANDS[i];
+      if (hour >= b.start && hour < b.end) return b;
+    }
+    return DEFAULT_BAND;
+  }
+
+  function formatTime(hour, minute) {
+    var period = hour >= 12 ? 'PM' : 'AM';
+    var h12 = hour % 12;
+    if (h12 === 0) h12 = 12;
+    var mm = minute < 10 ? '0' + minute : String(minute);
+    return h12 + ':' + mm + ' ' + period;
+  }
+
+  // Escapes for BOTH text and HTML-attribute contexts (quotes included) --
+  // this data comes from a page a signed-in user submitted, i.e. it's
+  // attacker-reachable on a page anyone can view, so under-escaping here
+  // (e.g. a textContent/innerHTML round-trip, which leaves quotes alone)
+  // would be a real stored-XSS opening, not just a display glitch.
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function renderCard(sub, occ) {
+    var band = timeBand(occ.hour);
+    var when = formatTime(occ.hour, occ.minute);
+    var metaBits = [when];
+    if (sub.ai_location_text) metaBits.push(sub.ai_location_text);
+    var desc = sub.ai_description ? '<div class="desc">' + escapeHtml(sub.ai_description) + '</div>' : '';
+    // Re-validated here even though /submit already requires http(s) at
+    // submission time -- this card is built from whatever the Supabase
+    // view returns, one step further from that original check, so this
+    // stays defensive rather than trusting it transitively.
+    var url = (sub.url && /^https?:\/\//i.test(sub.url)) ? sub.url : '#';
+    return '<div class="event hl-mid" data-band="' + band.key + '" data-distance="mid" data-price="" '
+      + 'data-source="manual" data-date="' + occ.date + '" style="border-color: ' + band.color + ';">'
+      + '<a href="' + escapeHtml(url) + '" target="_blank">📝 ' + escapeHtml(sub.ai_name || '(untitled)') + '</a>'
+      + '<div class="meta">' + escapeHtml(metaBits.join(' · ')) + '</div>'
+      + desc + '</div>';
+  }
+
+  // day-cols with zero real events render as a plain "Nothing found" div
+  // (see render_body() in render_calendar.py), not an .event-list -- swap
+  // that out for a real (initially empty) list on first injection so this
+  // works the same whether or not the day already had other events. Note:
+  // a day-col's sub-column count/width was fixed at render time from only
+  // events.db's own count (see sub_columns_for_count()) -- an injected
+  // card never widens that layout, just acceptable minor cosmetic slack
+  // for what should be a rare case, not worth a second layout pass here.
+  function injectInto(dayCol, cardHtml) {
+    var list = dayCol.querySelector('.event-list');
+    if (!list) {
+      var emptyEl = dayCol.querySelector('.empty');
+      if (emptyEl) emptyEl.remove();
+      list = document.createElement('div');
+      list.className = 'event-list';
+      dayCol.appendChild(list);
+    }
+    list.insertAdjacentHTML('beforeend', cardHtml);
+    var countEl = dayCol.querySelector('.day-header .count');
+    if (countEl) {
+      var current = parseInt((countEl.textContent || '').replace(/[()]/g, ''), 10) || 0;
+      countEl.textContent = '(' + (current + 1) + ')';
+    }
+  }
+
+  var todayStr = getPacificToday();
+  if (!todayStr) return;
+
+  fetch(SUPABASE_URL + '/rest/v1/approved_manual_events?region_slug=eq.' + encodeURIComponent(REGION_SLUG) + '&select=*', {
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+  })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (rows) {
+      var injected = false;
+      (rows || []).forEach(function (sub) {
+        var rec = null;
+        try { rec = JSON.parse(sub.ai_recurrence_json || '{}'); } catch (e) { rec = null; }
+        expandRecurrence(rec, todayStr).forEach(function (occ) {
+          var dayCol = document.querySelector('.day-col[data-date="' + occ.date + '"]');
+          if (!dayCol) return;
+          injectInto(dayCol, renderCard(sub, occ));
+          injected = true;
+        });
+      });
+      // Only bother re-running the filter if something actually got added
+      // -- __calRefreshAfterInject is set by BODY_TEMPLATE's own script
+      // (see its comment there), which always runs first since it's
+      // rendered earlier in the page than this script.
+      if (injected && window.__calRefreshAfterInject) window.__calRefreshAfterInject();
+    })
+    .catch(function () {
+      // Best-effort only -- a fetch/config/RLS problem just means these
+      // don't show up, same as leaving SUPABASE_URL/KEY unset. Never
+      // breaks the rest of the page, which has already fully rendered
+      // from events.db by the time this runs.
+    });
+})();
 </script>
 </body>
 </html>
