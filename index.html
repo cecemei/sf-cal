@@ -223,7 +223,7 @@
     <input type="hidden" id="date-start" value="2026-09-28" data-min="2026-09-28" data-max="2026-11-26">
     <input type="hidden" id="date-end" value="2026-09-30" data-min="2026-09-28" data-max="2026-11-26">
   </div>
-  <div class="page-nav">Updated Mon, Sep 28 · 10:28 AM · <a href="feed.html">What's new →</a></div>
+  <div class="page-nav">Updated Mon, Sep 28 · 10:59 AM · <a href="feed.html">What's new →</a></div>
 </div>
 <div class="legend-hint">Click a tag below to filter by it, click again to clear</div>
 <div class="legend-row">
@@ -26683,9 +26683,24 @@
       var hour = parseInt(timeParts[0], 10);
       var minute = parseInt(timeParts[1], 10);
       if (dow == null || isNaN(hour) || isNaN(minute)) return [];
+      // Same season-bounds handling as _expand_recurrence()'s Python
+      // counterpart -- an optional series_start_date/series_end_date (per
+      // feedback: a weekly series is often bounded to a stated season,
+      // e.g. "Free Friday evening concerts (May-November)", not something
+      // that recurs forever). YYYY-MM-DD strings compare correctly with
+      // plain <=/>= (same trick todayStr/maxStr already rely on), so no
+      // Date parsing needed here either -- just a shape check first so a
+      // malformed value (shouldn't happen, webapp/main.py's
+      // _form_fields_to_recurrence already validates before this ever gets
+      // written -- belt and suspenders) can't silently zero out every
+      // occurrence by comparing as "greater than" everything.
+      var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+      var seasonStart = (rec.series_start_date && DATE_RE.test(rec.series_start_date)) ? rec.series_start_date : null;
+      var seasonEnd = (rec.series_end_date && DATE_RE.test(rec.series_end_date)) ? rec.series_end_date : null;
       var occurrences = [];
-      var cursor = todayStr;
-      while (cursor <= maxStr) {
+      var cursor = (seasonStart && seasonStart > todayStr) ? seasonStart : todayStr;
+      var seasonMax = (seasonEnd && seasonEnd < maxStr) ? seasonEnd : maxStr;
+      while (cursor <= seasonMax) {
         // JS Date#getDay(): 0=Sunday..6=Saturday -- convert to this
         // codebase's own 0=Monday..6=Sunday convention (Python's
         // datetime.weekday(), what day_of_week is stored as) before
